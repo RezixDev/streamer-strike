@@ -79,10 +79,10 @@ export class Enemy {
             return;
         }
 
-        if (Math.abs(distance) < 80) { // Increased from 50 to 80 (Collision dist is ~64)
+        if (Math.abs(distance) < 35) { // Close range (Collision is ~64)
             this.attackTimer = 40; // Faster attack than Troll
             this.state = 'ATTACK';
-        } else if (Math.abs(distance) > 40) {
+        } else if (Math.abs(distance) > 35) {
             this.x += Math.sign(distance) * 0.015 * dt;
             this.state = 'RUN';
         } else {
@@ -98,7 +98,7 @@ export class Enemy {
             return;
         }
 
-        if (Math.abs(distance) < 90) { // Increased from 60 to 90
+        if (Math.abs(distance) < 30) { // Slightly longer range
             // Attack range
             this.attackTimer = 60; // Cooldown/Duration
             this.state = 'ATTACK';
