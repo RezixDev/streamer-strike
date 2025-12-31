@@ -180,13 +180,13 @@ export class CharacterController {
         if (this.animationTimer < 5 || this.animationTimer > 20) return null;
 
         const range = 2;
-        const hitboxHeight = 80;
+        const hitboxHeight = 60;
 
         // Direction 1 (Right): x is Center. Hitbox should start at Center + Offset
         // Direction -1 (Left): x is Center. Hitbox should start at Center - Range - Offset
         return {
             x: this.direction === 1 ? this.x + 10 : this.x - range - 10,
-            y: this.y - 40,
+            y: this.y - hitboxHeight, // Drawn from top-left, so subtract height to "grow up" from feet
             width: range,
             height: hitboxHeight
         };
