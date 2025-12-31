@@ -35,11 +35,19 @@ export const Physics = {
         // However, if we only separate X, we might get weird jumps.
         // Let's separate on X only for now as requested "Player shouldn't ghost over enemies"
 
-        if (minX < 100) { // arbitrary cap to avoid huge jumps
+        if (minX < minY) {
+            // Fix X
             if (overlapX1 < overlapX2) {
                 return { x: -overlapX1, y: 0 }; // Push Left
             } else {
                 return { x: overlapX2, y: 0 }; // Push Right
+            }
+        } else {
+            // Fix Y
+            if (overlapY1 < overlapY2) {
+                return { x: 0, y: -overlapY1 }; // Push Up
+            } else {
+                return { x: 0, y: overlapY2 }; // Push Down
             }
         }
         return { x: 0, y: 0 };

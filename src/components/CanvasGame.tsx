@@ -5,6 +5,8 @@ import { CharacterController, CharacterState } from '../game/CharacterController
 import { SpriteRenderer } from '../game/SpriteRenderer';
 import { Enemy } from '../game/Enemy';
 import { Physics } from '../game/Physics';
+import { Collectible } from '../game/Collectible';
+import { TileMap } from '../game/TileMap';
 
 // Placeholder or real paths - User can swap these
 const ASSETS = {
@@ -52,6 +54,10 @@ const ENEMY_FRAME_COUNTS = {
     TROLL: { IDLE: 8, RUN: 6, ATTACK: 6, HIT: 8 }
 };
 
+const COLLECTIBLE_ASSETS = {
+    HEART: '/sprites/collectibles/heart.png'
+};
+
 export const CanvasGame = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [_, setTick] = useState(0); // Force render for UI updates
@@ -62,16 +68,23 @@ export const CanvasGame = () => {
     const inputHandler = useRef<InputHandler | null>(null);
     const character = useRef<CharacterController | null>(null);
     const enemies = useRef<Enemy[]>([]);
+    const collectibles = useRef<Collectible[]>([]);
     const renderer = useRef<SpriteRenderer | null>(null);
+    const tileMap = useRef<TileMap | null>(null);
     const images = useRef<Record<string, HTMLImageElement>>({});
 
     // Initialize Game Objects
     useEffect(() => {
         inputHandler.current = new InputHandler();
-        character.current = new CharacterController({ x: 100, y: 500 });
+        character.current = new CharacterController({ x: 100, y: 100 }); // Spawn higher
+
+        // Initialize TileMap
+        tileMap.current = new TileMap(64);
+        tileMap.current.load('/sprites/maps/level1/map_data_level1.json', '/sprites/maps/map_spritesheet.png');
 
         // Spawn Enemies
         enemies.current = []; // Start empty, let spawner handle it
+        collectibles.current = [];
 
 
         renderer.current = new SpriteRenderer();
@@ -93,20 +106,27 @@ export const CanvasGame = () => {
             });
         });
 
+        // Load Collectible Images
+        Object.entries(COLLECTIBLE_ASSETS).forEach(([type, src]) => {
+            const img = new Image();
+            img.src = src;
+            images.current[type] = img;
+        });
+
         return () => {
             inputHandler.current?.destroy();
         };
     }, []);
 
     const update = useCallback((dt: number) => {
-        if (!inputHandler.current || !character.current || !enemies.current) return;
+        if (!inputHandler.current || !character.current || !enemies.current || !collectibles.current) return;
         if (gameOver) return; // Stop update on game over
 
-        character.current.update(inputHandler.current, dt);
+        character.current.update(inputHandler.current, dt, tileMap.current);
 
         // Update Enemies
         enemies.current.forEach(enemy => {
-            enemy.update(dt, character.current!.x);
+            enemy.update(dt, character.current!.x, tileMap.current);
         });
 
         // Check Collision
@@ -175,17 +195,44 @@ export const CanvasGame = () => {
             setGameOver(true);
         }
 
+        // Check Collectible Collisions
+        // playerHurtbox already defined above
+        collectibles.current.forEach(collectible => {
+            if (!collectible.collected && Physics.checkCollision(playerHurtbox, collectible.getHitbox())) {
+                collectible.collected = true;
+                if (character.current) {
+                    character.current.hp = Math.min(character.current.maxHp, character.current.hp + 20);
+                    setTick(t => t + 1); // Force update UI
+                    console.log("Collected Heart! HP:", character.current.hp);
+                }
+            }
+        });
+
+        // Remove collected collectibles
+        collectibles.current = collectibles.current.filter(c => !c.collected);
+
+
         // Random Spawning
         // 1% chance per frame if < 5 enemies
         if (enemies.current.length < 5 && Math.random() < 0.01) {
             const spawnX = character.current.x + 600 + Math.random() * 400; // 600-1000px ahead
             const type = Math.random() > 0.7 ? 'TROLL' : 'SPAMMER';
-            enemies.current.push(new Enemy(spawnX, 500, type));
+            enemies.current.push(new Enemy(spawnX, 100, type)); // Spawn in air / map text
             console.log("Spawned", type, "at", spawnX);
         }
 
-        // Remove dead enemies
-        enemies.current = enemies.current.filter(enemy => enemy.hp > 0);
+        // Remove dead enemies & Drop Collectibles
+        enemies.current = enemies.current.filter(enemy => {
+            if (enemy.hp <= 0) {
+                // Enemy Died
+                if (Math.random() < 0.5) {
+                    collectibles.current.push(new Collectible(enemy.x, enemy.y - 32, 'HEART'));
+                    console.log("Dropped Heart at", enemy.x, enemy.y - 32);
+                }
+                return false;
+            }
+            return true;
+        });
     }, [])
 
     const draw = useCallback(() => {
@@ -206,9 +253,14 @@ export const CanvasGame = () => {
         ctx.save();
         ctx.translate(-cameraX, 0);
 
-        // Draw Floor (extend to right)
-        ctx.fillStyle = '#333';
-        ctx.fillRect(0, 500, 20000, canvas.height - 500);
+        // Draw Floor (extend to right) -> REPLACED BY TILEMAP
+        // ctx.fillStyle = '#333';
+        // ctx.fillRect(0, 500, 20000, canvas.height - 500);
+
+        // Draw Map
+        if (tileMap.current) {
+            tileMap.current.draw(ctx, cameraX, canvas.width, canvas.height);
+        }
 
         // Draw Character
         const currentState = character.current.state;
@@ -303,6 +355,17 @@ export const CanvasGame = () => {
                 ctx.strokeStyle = 'yellow';
                 ctx.lineWidth = 2;
                 ctx.strokeRect(attackHitbox.x, attackHitbox.y, attackHitbox.width, attackHitbox.height);
+            }
+        });
+
+        // Draw Collectibles
+        collectibles.current.forEach(collectible => {
+            const img = images.current[collectible.type];
+            if (img) {
+                ctx.drawImage(img, collectible.x, collectible.y, collectible.width, collectible.height);
+            } else {
+                ctx.fillStyle = 'pink';
+                ctx.fillRect(collectible.x, collectible.y, collectible.width, collectible.height);
             }
         });
 

@@ -1,5 +1,6 @@
-import type { Rectangle } from './Physics';
+import { Physics, type Rectangle } from './Physics';
 import { SpriteRenderer } from './SpriteRenderer';
+import { TileMap } from './TileMap';
 
 export type EnemyType = 'SPAMMER' | 'TROLL';
 export type EnemyState = 'IDLE' | 'RUN' | 'ATTACK' | 'HIT';
@@ -13,6 +14,9 @@ export class Enemy {
     public maxHp: number = 100;
     public type: EnemyType;
     public state: EnemyState = 'IDLE';
+    public vy: number = 0;
+    private readonly GRAVITY = 0.08;
+    private readonly FLOOR_Y = 500; // Fallback
 
     public isHit: boolean = false;
     public hitTimer: number = 0;
@@ -36,7 +40,7 @@ export class Enemy {
         this.maxHp = this.hp;
     }
 
-    public update(dt: number, targetX: number) {
+    public update(dt: number, targetX: number, map?: TileMap | null) {
         if (this.hitTimer > 0) {
             this.hitTimer--;
             this.isHit = this.hitTimer > 0;
@@ -45,70 +49,93 @@ export class Enemy {
         }
 
         const distance = targetX - this.x;
-        // If distance > 0 (Player is right), we want face Right.
-        // If sprites are inherently Left: Left (normal) is 1? No usually Right is normal.
-        // Let's assume sprites face Right by default.
-        // If distance > 0 (Right), direction should be 1.
-        // If "Enemies are facing wrong direction", maybe they face Left by default?
-        // Or maybe my scale logic is backwards.
-        // Renderer: ctx.scale(direction, 1);
-        // If direction is 1, scale(1, 1) -> No flip.
-        // If direction is -1, scale(-1, 1) -> Flip.
 
-        // If user says "Wrong direction", and I was doing:
-        // this.direction = distance > 0 ? 1 : -1;
-        // Then when Player is Right (dist > 0), dir is 1 (No Flip).
-        // If sprite faces Right, it looks Right. Correct.
-        // If sprite faces Left, it looks Left. Wrong (should look Right).
+        // Calculate desired X velocity based on AI
+        this.direction = distance > 0 ? -1 : 1; // Default facing logic (can be overridden by AI)
 
-        // Let's try inverting it if the sprites are indeed facing Left by default or logic was just wrong.
-        this.direction = distance > 0 ? -1 : 1;
-
+        let vx = 0;
         if (this.type === 'TROLL') {
-            this.updateTroll(dt, distance);
+            vx = this.updateTroll(dt, distance);
         } else {
-            this.updateSpammer(dt, distance);
+            vx = this.updateSpammer(dt, distance);
+        }
+
+        // Apply X Movement
+        this.x += vx * dt;
+
+        // Resolve X Collision
+        if (map) {
+            const hurtbox = this.getHurtbox();
+            const collisions = map.getCollisions(hurtbox);
+            if (collisions.length > 0) {
+                const resolution = Physics.resolveCollision(hurtbox, collisions[0]);
+                this.x += resolution.x;
+            }
+        }
+
+        // Apply Gravity (Y Movement)
+        this.vy += this.GRAVITY;
+        this.y += this.vy * dt;
+
+        // Resolve Y Collision
+        if (map) {
+            const hurtbox = this.getHurtbox();
+            const collisions = map.getCollisions(hurtbox);
+            if (collisions.length > 0) {
+                const resolution = Physics.resolveCollision(hurtbox, collisions[0]);
+                this.y += resolution.y;
+                if (resolution.y < 0) this.vy = 0; // Grounded
+            }
+        } else {
+            // Fallback floor if no map
+            if (this.y >= this.FLOOR_Y) {
+                this.y = this.FLOOR_Y;
+                this.vy = 0;
+            }
         }
     }
 
-    private updateSpammer(dt: number, distance: number) {
+    private updateSpammer(dt: number, distance: number): number {
         // Spammer Logic: Walks towards player, always
         if (this.attackTimer > 0) {
             this.attackTimer--;
             this.state = 'ATTACK';
-            return;
+            return 0;
         }
 
-        if (Math.abs(distance) < 35) { // Close range (Collision is ~64)
-            this.attackTimer = 40; // Faster attack than Troll
+        let vx = 0;
+        if (Math.abs(distance) < 35) { // Close range
+            this.attackTimer = 40;
             this.state = 'ATTACK';
         } else if (Math.abs(distance) > 35) {
-            this.x += Math.sign(distance) * 0.015 * dt;
+            vx = Math.sign(distance) * 0.015;
+            this.direction = distance > 0 ? -1 : 1;
             this.state = 'RUN';
         } else {
             this.state = 'IDLE';
         }
+        return vx;
     }
 
-    private updateTroll(dt: number, distance: number) {
-        // Troll Logic: Walks, attacks when close
+    private updateTroll(dt: number, distance: number): number {
         if (this.attackTimer > 0) {
             this.attackTimer--;
             this.state = 'ATTACK';
-            return;
+            return 0;
         }
 
-        if (Math.abs(distance) < 30) { // Slightly longer range
-            // Attack range
-            this.attackTimer = 60; // Cooldown/Duration
+        let vx = 0;
+        if (Math.abs(distance) < 30) {
+            this.attackTimer = 60;
             this.state = 'ATTACK';
         } else if (Math.abs(distance) < 400) {
-            // Chase range
-            this.x += Math.sign(distance) * 0.01 * dt;
+            vx = Math.sign(distance) * 0.01;
+            this.direction = distance > 0 ? -1 : 1;
             this.state = 'RUN';
         } else {
             this.state = 'IDLE';
         }
+        return vx;
     }
 
     public takeDamage(amount: number) {

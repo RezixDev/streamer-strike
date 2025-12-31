@@ -1,5 +1,6 @@
 import { InputHandler } from './InputHandler';
-import type { Rectangle } from './Physics';
+import { TileMap } from './TileMap';
+import { Physics, type Rectangle } from './Physics';
 
 export const CharacterState = {
     IDLE: 'IDLE',
@@ -39,6 +40,7 @@ export class CharacterController {
     public state: CharacterState = CharacterState.IDLE;
     public direction: 1 | -1 = 1; // 1 = right, -1 = left
     public animationTimer: number = 0;
+    public isGrounded: boolean = false;
 
     private readonly MOVE_SPEED = 0.02;
     private readonly JUMP_FORCE = -1;
@@ -66,7 +68,7 @@ export class CharacterController {
         // Optional: Knockback?
     }
 
-    public update(input: InputHandler, dt: number) {
+    public update(input: InputHandler, dt: number, map?: TileMap | null) {
         if (this.hitTimer > 0) this.hitTimer--;
 
         // If attacking, lock movement and wait for animation to finish
@@ -86,16 +88,67 @@ export class CharacterController {
             this.handleMovement(input);
         }
 
-        // Apply physics
-        this.x += this.vx * dt;
-        this.y += this.vy * dt;
+        if (ATTACK_STATES.has(this.state)) {
+            // ... (keep attach logic, but handle physics below)
+        } else {
+            this.handleMovement(input);
+        }
 
-        // Floor collision
-        if (this.y >= this.FLOOR_Y) {
-            this.y = this.FLOOR_Y;
-            this.vy = 0;
+        // Apply Physics (X Axis)
+        this.x += this.vx * dt;
+
+        if (map) {
+            const hurtbox = this.getHurtbox();
+            const collisions = map.getCollisions(hurtbox);
+            if (collisions.length > 0) {
+                // Simple resolution
+                // If moving right, snap to left set of tile
+                // If moving left, snap to right side of tile
+                // But multiple tiles...
+
+                // Better: Find the deepest penetration or first contact
+                // Simplest: Revert X if collision
+                // this.x -= this.vx * dt; 
+                // this.vx = 0;
+                // But we want to slide
+
+                // Let's rely on resolving against the specific tile hit
+                const resolution = Physics.resolveCollision(hurtbox, collisions[0]); // Naive check against first
+                this.x += resolution.x;
+                this.vx = 0;
+            }
+        }
+
+        // Apply Physics (Y Axis)
+        this.y += this.vy * dt;
+        this.isGrounded = false; // Reset grounded state, will be set true if collision with floor occurs
+
+        if (map) {
+            const hurtbox = this.getHurtbox();
+            const collisions = map.getCollisions(hurtbox);
+            if (collisions.length > 0) {
+                // Assume floor/ceiling
+                const resolution = Physics.resolveCollision(hurtbox, collisions[0]); // Naive
+                this.y += resolution.y;
+
+                if (resolution.y < 0) { // Push up = Floor
+                    this.isGrounded = true;
+                    this.vy = 0;
+                } else if (resolution.y > 0) { // Push down = Ceiling
+                    this.vy = 0;
+                }
+            }
+        } else {
+            // Hardcoded Floor
+            if (this.y >= this.FLOOR_Y) {
+                this.y = this.FLOOR_Y;
+                this.vy = 0;
+                this.isGrounded = true;
+            }
+        }
+
+        if (this.isGrounded) {
             if (this.state === CharacterState.JUMPING) {
-                // If we were jumping and hit the ground, go to idle or run
                 if (Math.abs(this.vx) > 0.1) {
                     this.setState(CharacterState.RUNNING);
                 } else {
@@ -103,7 +156,7 @@ export class CharacterController {
                 }
             }
         } else {
-            // If in air and not attacking, ensure state is JUMPING
+            // Air state
             if (!ATTACK_STATES.has(this.state) && this.state !== CharacterState.JUMPING) {
                 this.setState(CharacterState.JUMPING);
             }
@@ -145,9 +198,10 @@ export class CharacterController {
         }
 
         // Jumping
-        if (input.isDown('Space') && this.y === this.FLOOR_Y) {
+        if (input.isDown('Space') && this.isGrounded) {
             this.vy = this.JUMP_FORCE;
             this.setState(CharacterState.JUMPING);
+            this.isGrounded = false;
         }
 
         // Gravity
