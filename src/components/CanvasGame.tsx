@@ -32,6 +32,26 @@ const FRAME_COUNTS = {
     [CharacterState.SWEEP_KICK]: 7,
 };
 
+const ENEMY_ASSETS = {
+    SPAMMER: {
+        IDLE: '/sprites/enemx/spammer/spammer_idle.png',
+        RUN: '/sprites/enemx/spammer/spammer_run.png',
+        ATTACK: '/sprites/enemx/spammer/spammer_walk.png', // Fallback
+        HIT: '/sprites/enemx/spammer/spammer_idle.png'
+    },
+    TROLL: {
+        IDLE: '/sprites/enemx/troll/troll_fight_idle.png',
+        RUN: '/sprites/enemx/troll/troll_run.png',
+        ATTACK: '/sprites/enemx/troll/troll_punch.png',
+        HIT: '/sprites/enemx/troll/troll_fight_idle.png'
+    }
+};
+
+const ENEMY_FRAME_COUNTS = {
+    SPAMMER: { IDLE: 8, RUN: 8, ATTACK: 8, HIT: 8 },
+    TROLL: { IDLE: 8, RUN: 6, ATTACK: 6, HIT: 8 }
+};
+
 export const CanvasGame = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [damage, setDamage] = useState(0);
@@ -39,7 +59,7 @@ export const CanvasGame = () => {
     // Game Objects Refs (Persist across renders)
     const inputHandler = useRef<InputHandler | null>(null);
     const character = useRef<CharacterController | null>(null);
-    const enemy = useRef<Enemy | null>(null);
+    const enemies = useRef<Enemy[]>([]);
     const renderer = useRef<SpriteRenderer | null>(null);
     const images = useRef<Record<string, HTMLImageElement>>({});
 
@@ -47,14 +67,31 @@ export const CanvasGame = () => {
     useEffect(() => {
         inputHandler.current = new InputHandler();
         character.current = new CharacterController({ x: 100, y: 500 });
-        enemy.current = new Enemy(600, 500);
+
+        // Spawn Enemies
+        enemies.current = [
+            new Enemy(600, 500, 'SPAMMER'),
+            new Enemy(800, 500, 'TROLL'),
+            new Enemy(1200, 500, 'SPAMMER')
+        ];
+
         renderer.current = new SpriteRenderer();
 
-        // Load Images
+        // Load Player Images
         Object.entries(ASSETS).forEach(([state, src]) => {
             const img = new Image();
             img.src = src;
             images.current[state] = img;
+        });
+
+        // Load Enemy Images
+        Object.entries(ENEMY_ASSETS).forEach(([type, states]) => {
+            Object.entries(states).forEach(([state, src]) => {
+                const img = new Image();
+                img.src = src;
+                const key = `${type}_${state}`;
+                images.current[key] = img;
+            });
         });
 
         return () => {
@@ -63,30 +100,35 @@ export const CanvasGame = () => {
     }, []);
 
     const update = useCallback((dt: number) => {
-        if (!inputHandler.current || !character.current || !enemy.current) return;
+        if (!inputHandler.current || !character.current || !enemies.current) return;
 
         character.current.update(inputHandler.current, dt);
-        enemy.current.update(dt, character.current.x);
+
+        // Update Enemies
+        enemies.current.forEach(enemy => {
+            enemy.update(dt, character.current!.x);
+        });
 
         // Check Collision
         const hitbox = character.current.getHitbox();
-        const hurtbox = enemy.current.getHurtbox();
 
-        if (hitbox && !enemy.current.isHit) {
-            if (Physics.checkCollision(hitbox, hurtbox)) {
-                enemy.current.takeDamage(10);
-                // Need to sync UI, but carefully
-                // For now, let's just log or set damage (simple version)
-                setDamage(prev => prev + 10);
-                console.log("HIT!");
-            }
+        if (hitbox) {
+            enemies.current.forEach(enemy => {
+                if (!enemy.isHit) {
+                    const hurtbox = enemy.getHurtbox();
+                    if (Physics.checkCollision(hitbox, hurtbox)) {
+                        enemy.takeDamage(10);
+                        setDamage(prev => prev + 10);
+                        console.log("HIT Enemy!", enemy.type);
+                    }
+                }
+            });
         }
     }, [])
 
     const draw = useCallback(() => {
         const canvas = canvasRef.current;
-        if (!canvas || !character.current || !renderer.current) {
-            // console.log("Missing refs:", { canvas: !!canvas, char: !!character.current, rend: !!renderer.current });
+        if (!canvas || !character.current || !renderer.current || !enemies.current) {
             return;
         }
 
@@ -97,8 +139,6 @@ export const CanvasGame = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // --- Camera Logic ---
-        // Center camera on player, but clamp to left side (0)
-        // canvas width is 800. Center is 400.
         const cameraX = Math.max(0, character.current.x - 300);
 
         ctx.save();
@@ -106,16 +146,12 @@ export const CanvasGame = () => {
 
         // Draw Floor (extend to right)
         ctx.fillStyle = '#333';
-        // Draw floor from start to far right
         ctx.fillRect(0, 500, 20000, canvas.height - 500);
 
-        // Draw Background elements? (optional)
-
-        // Get current sprite image
+        // Draw Character
         const currentState = character.current.state;
         const currentImage = images.current[currentState] || null;
 
-        // Draw Character
         renderer.current.draw(
             ctx,
             currentImage,
@@ -127,21 +163,44 @@ export const CanvasGame = () => {
             FRAME_COUNTS[currentState] || 1
         );
 
-        // Draw Enemy
-        if (enemy.current) {
-            ctx.fillStyle = enemy.current.isHit ? 'white' : 'red';
-            ctx.fillRect(enemy.current.x, enemy.current.y, enemy.current.width, enemy.current.height);
+        // Draw Enemies
+        enemies.current.forEach(enemy => {
+            const enemyType = enemy.type;
+            const enemyState = enemy.state;
+
+            // Get correct image for enemy instance
+            // Key format: TYPE_STATE (e.g., TROLL_RUN)
+            const imgKey = `${enemyType}_${enemyState}`;
+            const img = images.current[imgKey];
+
+            if (img) {
+                enemy.renderer.draw(
+                    ctx,
+                    img,
+                    enemy.x,
+                    enemy.y,
+                    enemy.width,
+                    enemy.height,
+                    enemy.direction,
+                    ENEMY_FRAME_COUNTS[enemyType][enemyState] || 1
+                );
+            } else {
+                // Fallback Draw
+                ctx.fillStyle = enemy.isHit ? 'white' : (enemyType === 'TROLL' ? 'green' : 'orange');
+                ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+            }
 
             // Debug Draw
-            const eHurt = enemy.current.getHurtbox();
-            ctx.strokeStyle = '#00FF00'; // Green = Hurtbox
-            ctx.strokeRect(eHurt.x, eHurt.y, eHurt.width, eHurt.height);
+            const eHurt = enemy.getHurtbox();
+            // ctx.strokeStyle = '#00FF00'; 
+            // ctx.strokeRect(eHurt.x, eHurt.y, eHurt.width, eHurt.height);
+        });
 
-            const cHit = character.current.getHitbox();
-            if (cHit) {
-                ctx.strokeStyle = '#FF0000'; // Red = Hitbox
-                ctx.strokeRect(cHit.x, cHit.y, cHit.width, cHit.height);
-            }
+        // Debug Player Hitbox
+        const cHit = character.current.getHitbox();
+        if (cHit) {
+            ctx.strokeStyle = '#FF0000';
+            ctx.strokeRect(cHit.x, cHit.y, cHit.width, cHit.height);
         }
 
         ctx.restore();

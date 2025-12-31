@@ -1,4 +1,8 @@
 import type { Rectangle } from './Physics';
+import { SpriteRenderer } from './SpriteRenderer';
+
+export type EnemyType = 'SPAMMER' | 'TROLL';
+export type EnemyState = 'IDLE' | 'RUN' | 'ATTACK' | 'HIT';
 
 export class Enemy {
     public x: number;
@@ -6,32 +10,83 @@ export class Enemy {
     public width: number = 64;
     public height: number = 64;
     public hp: number = 100;
+    public type: EnemyType;
+    public state: EnemyState = 'IDLE';
+
     public isHit: boolean = false;
     public hitTimer: number = 0;
+    public attackTimer: number = 0;
+    public direction: 1 | -1 = -1; // Default face left
 
-    constructor(x: number, y: number) {
+    // Renderer per enemy instance to track own animation frame
+    public renderer: SpriteRenderer;
+
+    constructor(x: number, y: number, type: EnemyType) {
         this.x = x;
         this.y = y;
+        this.type = type;
+        this.renderer = new SpriteRenderer();
+
+        if (type === 'SPAMMER') {
+            this.hp = 50;
+        } else {
+            this.hp = 150;
+        }
     }
 
     public update(dt: number, targetX: number) {
-        // Simple AI: Follow player
         if (this.hitTimer > 0) {
             this.hitTimer--;
             this.isHit = this.hitTimer > 0;
+            this.state = 'HIT';
             return;
         }
 
         const distance = targetX - this.x;
-        if (Math.abs(distance) > 50) {
-             this.x += Math.sign(distance) * 0.01 * dt;
+        this.direction = distance > 0 ? 1 : -1;
+
+        if (this.type === 'TROLL') {
+            this.updateTroll(dt, distance);
+        } else {
+            this.updateSpammer(dt, distance);
+        }
+    }
+
+    private updateSpammer(dt: number, distance: number) {
+        // Spammer Logic: Walks towards player, always
+        if (Math.abs(distance) > 40) {
+            this.x += Math.sign(distance) * 0.015 * dt;
+            this.state = 'RUN';
+        } else {
+            this.state = 'IDLE';
+        }
+    }
+
+    private updateTroll(dt: number, distance: number) {
+        // Troll Logic: Walks, attacks when close
+        if (this.attackTimer > 0) {
+            this.attackTimer--;
+            this.state = 'ATTACK';
+            return;
+        }
+
+        if (Math.abs(distance) < 60) {
+            // Attack range
+            this.attackTimer = 60; // Cooldown/Duration
+            this.state = 'ATTACK';
+        } else if (Math.abs(distance) < 400) {
+            // Chase range
+            this.x += Math.sign(distance) * 0.01 * dt;
+            this.state = 'RUN';
+        } else {
+            this.state = 'IDLE';
         }
     }
 
     public takeDamage(amount: number) {
         this.hp -= amount;
         this.isHit = true;
-        this.hitTimer = 20; // Stunned for 20 frames
+        this.hitTimer = 20; // Stunned
     }
 
     public getHurtbox(): Rectangle {
