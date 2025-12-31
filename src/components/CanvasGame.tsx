@@ -133,15 +133,39 @@ export const CanvasGame = () => {
 
             // Solid Collision (Body vs Body)
             if (Physics.checkCollision(enemyHurtbox, playerHurtbox)) {
-                // Push Player away
                 const resolution = Physics.resolveCollision(playerHurtbox, enemyHurtbox);
                 character.current!.x += resolution.x;
-                character.current!.y += resolution.y; // Should be 0 for now as we only did X
+                character.current!.y += resolution.y;
+            }
 
-                // Damage
-                if (character.current && character.current.hitTimer === 0) {
-                    character.current.takeDamage(5);
-                    setTick(t => t + 1);
+            // Enemy Attack Damage (Active frames simulation)
+            // Spammer Attack: Timer 20-30 (Duration 40)
+            // Troll Attack: Timer 20-40 (Duration 60)
+            let attackRange = 0;
+            if (enemy.state === 'ATTACK') {
+                if (enemy.type === 'SPAMMER' && enemy.attackTimer > 10 && enemy.attackTimer < 30) {
+                    attackRange = 40;
+                } else if (enemy.type === 'TROLL' && enemy.attackTimer > 20 && enemy.attackTimer < 40) {
+                    attackRange = 60;
+                }
+            }
+
+            if (attackRange > 0) {
+                // Create a temporary attack hitbox based on facing direction
+                // Direction 1 is Left, -1 is Right (based on Enemy.ts logic)
+                const attackHitbox = {
+                    x: enemy.direction === -1 ? enemy.x + 20 : enemy.x - 20 - attackRange,
+                    y: enemy.y - 40,
+                    width: attackRange,
+                    height: 40
+                };
+
+                if (Physics.checkCollision(attackHitbox, playerHurtbox)) {
+                    if (character.current && character.current.hitTimer === 0) {
+                        character.current.takeDamage(10);
+                        setTick(t => t + 1);
+                        console.log("Player Hit by", enemy.type);
+                    }
                 }
             }
         });
@@ -229,7 +253,7 @@ export const CanvasGame = () => {
             }
 
             // Debug Draw
-            const eHurt = enemy.getHurtbox();
+            // const eHurt = enemy.getHurtbox();
             // ctx.strokeStyle = '#00FF00'; 
             // ctx.strokeRect(eHurt.x, eHurt.y, eHurt.width, eHurt.height);
 
@@ -247,6 +271,39 @@ export const CanvasGame = () => {
             // Foreground (Green)
             ctx.fillStyle = '#00FF00';
             ctx.fillRect(barX, barY, barWidth * healthPct, barHeight);
+
+            // --- DEBUG VISUALS ---
+            // 1. Draw Enemy Hurtbox (Blue)
+            const eHurt = enemy.getHurtbox();
+            ctx.strokeStyle = 'blue';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(eHurt.x, eHurt.y, eHurt.width, eHurt.height);
+
+            // 2. Draw State Text
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.fillText(enemy.state, enemy.x - 20, enemy.y - enemy.height - 20);
+
+            // 3. Draw Attack Hitbox (Yellow) if attacking (Simulated for visual)
+            let attackRange = 0;
+            if (enemy.state === 'ATTACK') {
+                if (enemy.type === 'SPAMMER' && enemy.attackTimer > 10 && enemy.attackTimer < 30) {
+                    attackRange = 10;
+                } else if (enemy.type === 'TROLL' && enemy.attackTimer > 20 && enemy.attackTimer < 40) {
+                    attackRange = 1;
+                }
+            }
+            if (attackRange > 0) {
+                const attackHitbox = {
+                    x: enemy.direction === -1 ? enemy.x + 20 : enemy.x - 20 - attackRange,
+                    y: enemy.y - 40,
+                    width: attackRange,
+                    height: 40
+                };
+                ctx.strokeStyle = 'yellow';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(attackHitbox.x, attackHitbox.y, attackHitbox.width, attackHitbox.height);
+            }
         });
 
         // Debug Player Hitbox

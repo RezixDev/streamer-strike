@@ -73,7 +73,16 @@ export class Enemy {
 
     private updateSpammer(dt: number, distance: number) {
         // Spammer Logic: Walks towards player, always
-        if (Math.abs(distance) > 40) {
+        if (this.attackTimer > 0) {
+            this.attackTimer--;
+            this.state = 'ATTACK';
+            return;
+        }
+
+        if (Math.abs(distance) < 80) { // Increased from 50 to 80 (Collision dist is ~64)
+            this.attackTimer = 40; // Faster attack than Troll
+            this.state = 'ATTACK';
+        } else if (Math.abs(distance) > 40) {
             this.x += Math.sign(distance) * 0.015 * dt;
             this.state = 'RUN';
         } else {
@@ -89,7 +98,7 @@ export class Enemy {
             return;
         }
 
-        if (Math.abs(distance) < 60) {
+        if (Math.abs(distance) < 90) { // Increased from 60 to 90
             // Attack range
             this.attackTimer = 60; // Cooldown/Duration
             this.state = 'ATTACK';
