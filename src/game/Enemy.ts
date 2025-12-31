@@ -90,11 +90,13 @@ export class Enemy {
     }
 
     public getHurtbox(): Rectangle {
+        // x,y is Bottom-Center
+        const halfWidth = this.width / 2;
         return {
-            x: this.x + 10,
-            y: this.y + 10,
+            x: this.x - halfWidth + 10,
+            y: this.y - this.height + 5,
             width: this.width - 20,
-            height: this.height - 20
+            height: this.height - 10
         };
     }
 }

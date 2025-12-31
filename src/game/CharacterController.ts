@@ -147,9 +147,11 @@ export class CharacterController {
     }
 
     public getHurtbox(): Rectangle {
+        // x,y is Bottom-Center (Feet)
+        const halfWidth = this.width / 2;
         return {
-            x: this.x + 16,
-            y: this.y,
+            x: this.x - halfWidth + 16, // Center - half + padding
+            y: this.y - this.height,    // Bottom - height (Top)
             width: this.width - 32,
             height: this.height
         };
@@ -164,9 +166,11 @@ export class CharacterController {
         const range = 50;
         const hitboxHeight = 40;
 
+        // Direction 1 (Right): x is Center. Hitbox should start at Center + Offset
+        // Direction -1 (Left): x is Center. Hitbox should start at Center - Range - Offset
         return {
-            x: this.direction === 1 ? this.x + this.width - 10 : this.x - range + 10,
-            y: this.y + 20,
+            x: this.direction === 1 ? this.x + 10 : this.x - range - 10,
+            y: this.y - 40,
             width: range,
             height: hitboxHeight
         };
