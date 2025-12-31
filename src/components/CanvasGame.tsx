@@ -36,7 +36,7 @@ const ENEMY_ASSETS = {
     SPAMMER: {
         IDLE: '/sprites/enemx/spammer/spammer_idle.png',
         RUN: '/sprites/enemx/spammer/spammer_run.png',
-        ATTACK: '/sprites/enemx/spammer/spammer_walk.png', // Fallback
+        ATTACK: '/sprites/enemx/spammer/spammer_jump.png', // Switched to Jump for better visual
         HIT: '/sprites/enemx/spammer/spammer_idle.png'
     },
     TROLL: {
