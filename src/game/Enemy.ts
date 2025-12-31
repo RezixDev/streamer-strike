@@ -10,6 +10,7 @@ export class Enemy {
     public width: number = 64;
     public height: number = 64;
     public hp: number = 100;
+    public maxHp: number = 100;
     public type: EnemyType;
     public state: EnemyState = 'IDLE';
 
@@ -32,6 +33,7 @@ export class Enemy {
         } else {
             this.hp = 150;
         }
+        this.maxHp = this.hp;
     }
 
     public update(dt: number, targetX: number) {
@@ -43,7 +45,24 @@ export class Enemy {
         }
 
         const distance = targetX - this.x;
-        this.direction = distance > 0 ? 1 : -1;
+        // If distance > 0 (Player is right), we want face Right.
+        // If sprites are inherently Left: Left (normal) is 1? No usually Right is normal.
+        // Let's assume sprites face Right by default.
+        // If distance > 0 (Right), direction should be 1.
+        // If "Enemies are facing wrong direction", maybe they face Left by default?
+        // Or maybe my scale logic is backwards.
+        // Renderer: ctx.scale(direction, 1);
+        // If direction is 1, scale(1, 1) -> No flip.
+        // If direction is -1, scale(-1, 1) -> Flip.
+
+        // If user says "Wrong direction", and I was doing:
+        // this.direction = distance > 0 ? 1 : -1;
+        // Then when Player is Right (dist > 0), dir is 1 (No Flip).
+        // If sprite faces Right, it looks Right. Correct.
+        // If sprite faces Left, it looks Left. Wrong (should look Right).
+
+        // Let's try inverting it if the sprites are indeed facing Left by default or logic was just wrong.
+        this.direction = distance > 0 ? -1 : 1;
 
         if (this.type === 'TROLL') {
             this.updateTroll(dt, distance);

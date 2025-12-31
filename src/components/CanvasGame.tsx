@@ -54,7 +54,9 @@ const ENEMY_FRAME_COUNTS = {
 
 export const CanvasGame = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [damage, setDamage] = useState(0);
+    const [_, setTick] = useState(0); // Force render for UI updates
+    const [gameOver, setGameOver] = useState(false);
+
 
     // Game Objects Refs (Persist across renders)
     const inputHandler = useRef<InputHandler | null>(null);
@@ -69,11 +71,8 @@ export const CanvasGame = () => {
         character.current = new CharacterController({ x: 100, y: 500 });
 
         // Spawn Enemies
-        enemies.current = [
-            new Enemy(600, 500, 'SPAMMER'),
-            new Enemy(800, 500, 'TROLL'),
-            new Enemy(1200, 500, 'SPAMMER')
-        ];
+        enemies.current = []; // Start empty, let spawner handle it
+
 
         renderer.current = new SpriteRenderer();
 
@@ -101,6 +100,7 @@ export const CanvasGame = () => {
 
     const update = useCallback((dt: number) => {
         if (!inputHandler.current || !character.current || !enemies.current) return;
+        if (gameOver) return; // Stop update on game over
 
         character.current.update(inputHandler.current, dt);
 
@@ -118,12 +118,50 @@ export const CanvasGame = () => {
                     const hurtbox = enemy.getHurtbox();
                     if (Physics.checkCollision(hitbox, hurtbox)) {
                         enemy.takeDamage(10);
-                        setDamage(prev => prev + 10);
+                        // setDamage(prev => prev + 10);
+                        setTick(t => t + 1); // Force update
                         console.log("HIT Enemy!", enemy.type);
                     }
                 }
             });
         }
+
+        // Check Enemy Attacks on Player & Solid Collision
+        const playerHurtbox = character.current.getHurtbox();
+        enemies.current.forEach(enemy => {
+            const enemyHurtbox = enemy.getHurtbox();
+
+            // Solid Collision (Body vs Body)
+            if (Physics.checkCollision(enemyHurtbox, playerHurtbox)) {
+                // Push Player away
+                const resolution = Physics.resolveCollision(playerHurtbox, enemyHurtbox);
+                character.current!.x += resolution.x;
+                character.current!.y += resolution.y; // Should be 0 for now as we only did X
+
+                // Damage
+                if (character.current && character.current.hitTimer === 0) {
+                    character.current.takeDamage(5);
+                    setTick(t => t + 1);
+                }
+            }
+        });
+
+        // Check Game Over
+        if (character.current.hp <= 0 && !gameOver) {
+            setGameOver(true);
+        }
+
+        // Random Spawning
+        // 1% chance per frame if < 5 enemies
+        if (enemies.current.length < 5 && Math.random() < 0.01) {
+            const spawnX = character.current.x + 600 + Math.random() * 400; // 600-1000px ahead
+            const type = Math.random() > 0.7 ? 'TROLL' : 'SPAMMER';
+            enemies.current.push(new Enemy(spawnX, 500, type));
+            console.log("Spawned", type, "at", spawnX);
+        }
+
+        // Remove dead enemies
+        enemies.current = enemies.current.filter(enemy => enemy.hp > 0);
     }, [])
 
     const draw = useCallback(() => {
@@ -194,6 +232,21 @@ export const CanvasGame = () => {
             const eHurt = enemy.getHurtbox();
             // ctx.strokeStyle = '#00FF00'; 
             // ctx.strokeRect(eHurt.x, eHurt.y, eHurt.width, eHurt.height);
+
+            // Draw Health Bar
+            const barWidth = 40;
+            const barHeight = 4;
+            const healthPct = Math.max(0, enemy.hp / enemy.maxHp);
+            const barX = enemy.x - barWidth / 2;
+            const barY = enemy.y - enemy.height - 10;
+
+            // Background (Red)
+            ctx.fillStyle = 'red';
+            ctx.fillRect(barX, barY, barWidth, barHeight);
+
+            // Foreground (Green)
+            ctx.fillStyle = '#00FF00';
+            ctx.fillRect(barX, barY, barWidth * healthPct, barHeight);
         });
 
         // Debug Player Hitbox
@@ -219,13 +272,15 @@ export const CanvasGame = () => {
                 />
 
                 {/* HUD Overlay */}
-                <div className="absolute bottom-4 right-4 bg-red-900/80 p-4 rounded-lg transform rotate-[-2deg] border-2 border-red-500">
-                    <div className="text-white font-black text-4xl drop-shadow-md">
-                        {damage}%
+                <div className="absolute top-4 right-4 bg-gray-900/80 p-4 rounded-lg border-2 border-blue-500 w-64">
+                    <div className="text-white font-bold mb-1">PLAYER HEALTH</div>
+                    <div className="w-full bg-gray-700 h-4 rounded-full overflow-hidden">
+                        <div
+                            className="bg-blue-500 h-full transition-all duration-100"
+                            style={{ width: `${Math.max(0, (character.current?.hp || 100) / (character.current?.maxHp || 100) * 100)}%` }}
+                        ></div>
                     </div>
-                    <div className="text-red-200 text-xs uppercase tracking-widest font-bold">
-                        Damage
-                    </div>
+                    <div className="text-right text-white text-sm mt-1">{character.current?.hp}/100</div>
                 </div>
 
                 {/* Controls Hint */}
@@ -234,6 +289,19 @@ export const CanvasGame = () => {
                     <p>J: Jab | K: Kick</p>
                     <p>L: Strong Punch | M: Sweep</p>
                 </div>
+
+                {/* Game Over Modal */}
+                {gameOver && (
+                    <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-50">
+                        <h1 className="text-6xl font-black text-red-600 mb-4 drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]">GAME OVER</h1>
+                        <button
+                            className="px-8 py-3 bg-white text-black font-bold text-xl rounded hover:bg-gray-200 transition-colors"
+                            onClick={() => window.location.reload()}
+                        >
+                            TRY AGAIN
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

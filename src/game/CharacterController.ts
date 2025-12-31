@@ -46,6 +46,11 @@ export class CharacterController {
     private readonly FRICTION = 0.85;
     private readonly FLOOR_Y = 500;
 
+    public hp: number = 100;
+    public maxHp: number = 100;
+    public isHit: boolean = false;
+    public hitTimer: number = 0;
+
     // Animation durations (in ticks or ms - we'll use ticks/frames for now)
     private readonly ATTACK_DURATION = 30;
 
@@ -54,7 +59,16 @@ export class CharacterController {
         this.y = y;
     }
 
+    public takeDamage(amount: number) {
+        if (this.hitTimer > 0) return; // Invulnerable
+        this.hp -= amount;
+        this.hitTimer = 30; // Frames of invulnerability
+        // Optional: Knockback?
+    }
+
     public update(input: InputHandler, dt: number) {
+        if (this.hitTimer > 0) this.hitTimer--;
+
         // If attacking, lock movement and wait for animation to finish
         if (ATTACK_STATES.has(this.state)) {
             this.animationTimer++;
@@ -149,10 +163,12 @@ export class CharacterController {
     public getHurtbox(): Rectangle {
         // x,y is Bottom-Center (Feet)
         const halfWidth = this.width / 2;
+        // Reducing width further (more padding)
+        const padding = 24;
         return {
-            x: this.x - halfWidth + 16, // Center - half + padding
-            y: this.y - this.height,    // Bottom - height (Top)
-            width: this.width - 32,
+            x: this.x - halfWidth + padding,
+            y: this.y - this.height,
+            width: this.width - (padding * 2),
             height: this.height
         };
     }
@@ -163,8 +179,8 @@ export class CharacterController {
         // Only active during middle frames
         if (this.animationTimer < 5 || this.animationTimer > 20) return null;
 
-        const range = 50;
-        const hitboxHeight = 40;
+        const range = 2;
+        const hitboxHeight = 80;
 
         // Direction 1 (Right): x is Center. Hitbox should start at Center + Offset
         // Direction -1 (Left): x is Center. Hitbox should start at Center - Range - Offset
