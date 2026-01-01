@@ -8,17 +8,19 @@ import { Physics } from '../game/Physics';
 import { Collectible } from '../game/Collectible';
 import { TileMap } from '../game/TileMap';
 
-// Placeholder or real paths - User can swap these
+// Helper to prepend base path
+const BASE = import.meta.env.BASE_URL;
+
 const ASSETS = {
-    [CharacterState.IDLE]: '/sprites/fresh/idle.png',
-    [CharacterState.RUNNING]: '/sprites/fresh/run.png',
-    [CharacterState.JUMPING]: '/sprites/fresh/jump.png',
-    [CharacterState.ATTACKING]: '/sprites/fresh/attack_kick.png',
-    [CharacterState.JAB]: '/sprites/fresh/left_jab.png',
-    [CharacterState.STRONG_PUNCH]: '/sprites/fresh/strong_punch.png',
-    [CharacterState.WEAK_PUNCH]: '/sprites/fresh/weak_punch.png',
-    [CharacterState.TORNADO_KICK]: '/sprites/fresh/tornado_kick.png',
-    [CharacterState.SWEEP_KICK]: '/sprites/fresh/sweap_kick.png',
+    [CharacterState.IDLE]: `${BASE}sprites/fresh/idle.png`,
+    [CharacterState.RUNNING]: `${BASE}sprites/fresh/run.png`,
+    [CharacterState.JUMPING]: `${BASE}sprites/fresh/jump.png`,
+    [CharacterState.ATTACKING]: `${BASE}sprites/fresh/attack_kick.png`,
+    [CharacterState.JAB]: `${BASE}sprites/fresh/left_jab.png`,
+    [CharacterState.STRONG_PUNCH]: `${BASE}sprites/fresh/strong_punch.png`,
+    [CharacterState.WEAK_PUNCH]: `${BASE}sprites/fresh/weak_punch.png`,
+    [CharacterState.TORNADO_KICK]: `${BASE}sprites/fresh/tornado_kick.png`,
+    [CharacterState.SWEEP_KICK]: `${BASE}sprites/fresh/sweap_kick.png`,
 };
 
 // Frame counts for each state
@@ -36,16 +38,16 @@ const FRAME_COUNTS = {
 
 const ENEMY_ASSETS = {
     SPAMMER: {
-        IDLE: '/sprites/enemx/spammer/spammer_idle.png',
-        RUN: '/sprites/enemx/spammer/spammer_run.png',
-        ATTACK: '/sprites/enemx/spammer/spammer_jump.png', // Switched to Jump for better visual
-        HIT: '/sprites/enemx/spammer/spammer_idle.png'
+        IDLE: `${BASE}sprites/enemx/spammer/spammer_idle.png`,
+        RUN: `${BASE}sprites/enemx/spammer/spammer_run.png`,
+        ATTACK: `${BASE}sprites/enemx/spammer/spammer_jump.png`, // Switched to Jump for better visual
+        HIT: `${BASE}sprites/enemx/spammer/spammer_idle.png`
     },
     TROLL: {
-        IDLE: '/sprites/enemx/troll/troll_fight_idle.png',
-        RUN: '/sprites/enemx/troll/troll_run.png',
-        ATTACK: '/sprites/enemx/troll/troll_punch.png',
-        HIT: '/sprites/enemx/troll/troll_fight_idle.png'
+        IDLE: `${BASE}sprites/enemx/troll/troll_fight_idle.png`,
+        RUN: `${BASE}sprites/enemx/troll/troll_run.png`,
+        ATTACK: `${BASE}sprites/enemx/troll/troll_punch.png`,
+        HIT: `${BASE}sprites/enemx/troll/troll_fight_idle.png`
     }
 };
 
@@ -55,7 +57,7 @@ const ENEMY_FRAME_COUNTS = {
 };
 
 const COLLECTIBLE_ASSETS = {
-    HEART: '/sprites/collectibles/heart.png'
+    HEART: `${BASE}sprites/collectibles/heart.png`
 };
 
 export const CanvasGame = () => {
@@ -81,7 +83,7 @@ export const CanvasGame = () => {
 
         // Initialize TileMap
         tileMap.current = new TileMap(64);
-        tileMap.current.load('/sprites/maps/level1/map_data_level1.json', '/sprites/maps/map_spritesheet.png');
+        tileMap.current.load(`${BASE}sprites/maps/level1/map_data_level1.json`, `${BASE}sprites/maps/map_spritesheet.png`);
 
         // Spawn Enemies
         enemies.current = []; // Start empty, let spawner handle it
