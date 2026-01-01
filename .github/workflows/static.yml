@@ -31,20 +31,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm' # Use 'npm' cache since lockfile is present (Wait, user has pnpm-lock.yaml? Check file list again)
 
-      # User has pnpm-lock.yaml, so we should use pnpm
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8
 
-      - name: Setup Node (again for pnpm cache config if needed, or just install)
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
