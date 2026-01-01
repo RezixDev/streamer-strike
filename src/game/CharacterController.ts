@@ -41,9 +41,10 @@ export class CharacterController {
     public direction: 1 | -1 = 1; // 1 = right, -1 = left
     public animationTimer: number = 0;
     public isGrounded: boolean = false;
+    public safePosition: { x: number, y: number } = { x: 100, y: 100 };
 
     private readonly MOVE_SPEED = 0.05; // Was 0.02
-    private readonly JUMP_FORCE = -1.6; // Was -1.0
+    private readonly JUMP_FORCE = -1.3; // Was -1.6, lowered per request
     private readonly GRAVITY = 0.08;
     private readonly FRICTION = 0.90; // Was 0.85
     private readonly FLOOR_Y = 500;
@@ -59,6 +60,7 @@ export class CharacterController {
     constructor({ x, y }: CharacterProps) {
         this.x = x;
         this.y = y;
+        this.safePosition = { x, y };
     }
 
     public takeDamage(amount: number) {
@@ -88,14 +90,17 @@ export class CharacterController {
             this.handleMovement(input);
         }
 
-        if (ATTACK_STATES.has(this.state)) {
-            // ... (keep attach logic, but handle physics below)
-        } else {
-            this.handleMovement(input);
-        }
-
         // Apply Physics (X Axis)
         this.x += this.vx * dt;
+
+        // Clamp X to Map Bounds
+        if (this.x < 0) {
+            this.x = 0;
+            this.vx = 0;
+        } else if (this.x > 7500) { // Slight buffer over win condition
+            this.x = 7500;
+            this.vx = 0;
+        }
 
         if (map) {
             const hurtbox = this.getHurtbox();
@@ -157,6 +162,12 @@ export class CharacterController {
                     this.setState(CharacterState.IDLE);
                 }
             }
+
+            // Update Checkpoint if stable grounded
+            // Check if standing on solid ground (not falling)
+            if (this.vy === 0) {
+                this.safePosition = { x: this.x, y: this.y };
+            }
         } else {
             // Air state
             if (!ATTACK_STATES.has(this.state) && this.state !== CharacterState.JUMPING) {
@@ -214,6 +225,18 @@ export class CharacterController {
         if (this.state === newState) return;
         this.state = newState;
         this.animationTimer = 0;
+    }
+
+    public checkVoid(bottomLimit: number) {
+        if (this.y > bottomLimit) {
+            this.hp -= 20; // Penalty
+            this.x = 100; // Reset to Start
+            this.y = 100; // Reset to Start
+            this.vx = 0;
+            this.vy = 0;
+            return true; // Respawned
+        }
+        return false;
     }
 
     public getHurtbox(): Rectangle {

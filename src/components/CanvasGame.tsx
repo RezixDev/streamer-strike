@@ -62,6 +62,7 @@ export const CanvasGame = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [_, setTick] = useState(0); // Force render for UI updates
     const [gameOver, setGameOver] = useState(false);
+    const [gameWon, setGameWon] = useState(false);
 
 
     // Game Objects Refs (Persist across renders)
@@ -120,9 +121,10 @@ export const CanvasGame = () => {
 
     const update = useCallback((dt: number) => {
         if (!inputHandler.current || !character.current || !enemies.current || !collectibles.current) return;
-        if (gameOver) return; // Stop update on game over
+        if (gameOver || gameWon) return; // Stop update on game over
 
         character.current.update(inputHandler.current, dt, tileMap.current);
+        character.current.checkVoid(1000); // Check strictly after update
 
         // Update Enemies
         enemies.current.forEach(enemy => {
@@ -211,6 +213,10 @@ export const CanvasGame = () => {
         // Remove collected collectibles
         collectibles.current = collectibles.current.filter(c => !c.collected);
 
+        // Check Win Condition
+        if (character.current.x > 7400 && !gameWon) {
+            setGameWon(true);
+        }
 
         // Random Spawning
         // 1% chance per frame if < 5 enemies
@@ -419,6 +425,20 @@ export const CanvasGame = () => {
                             onClick={() => window.location.reload()}
                         >
                             TRY AGAIN
+                        </button>
+                    </div>
+                )}
+
+                {/* Win Modal */}
+                {gameWon && (
+                    <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-50">
+                        <h1 className="text-6xl font-black text-green-500 mb-4 drop-shadow-[0_0_10px_rgba(0,255,0,0.8)]">YOU WON!</h1>
+                        <p className="text-white text-xl mb-8">You survived the Strike!</p>
+                        <button
+                            className="px-8 py-3 bg-white text-black font-bold text-xl rounded hover:bg-gray-200 transition-colors"
+                            onClick={() => window.location.reload()}
+                        >
+                            PLAY AGAIN
                         </button>
                     </div>
                 )}

@@ -6,390 +6,6 @@
       "visible": true,
       "opacity": 1,
       "data": {
-        "15,8": {
-          "tileId": 36,
-          "flipX": false
-        },
-        "16,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "17,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "18,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "19,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "20,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "21,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "22,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "23,8": {
-          "tileId": 38,
-          "flipX": false
-        },
-        "13,9": {
-          "tileId": 114,
-          "flipX": false
-        },
-        "14,9": {
-          "tileId": 115,
-          "flipX": false
-        },
-        "26,8": {
-          "tileId": 36,
-          "flipX": false
-        },
-        "27,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "28,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "29,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "30,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "31,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "32,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "33,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "34,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "35,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "36,8": {
-          "tileId": 38,
-          "flipX": false
-        },
-        "39,8": {
-          "tileId": 36,
-          "flipX": false
-        },
-        "40,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "41,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "42,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "43,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "44,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "45,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "46,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "47,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "48,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "49,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "50,8": {
-          "tileId": 38,
-          "flipX": false
-        },
-        "53,8": {
-          "tileId": 36,
-          "flipX": false
-        },
-        "54,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "55,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "56,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "57,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "58,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "59,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "60,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "61,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "62,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "63,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "64,8": {
-          "tileId": 38,
-          "flipX": false
-        },
-        "67,8": {
-          "tileId": 36,
-          "flipX": false
-        },
-        "68,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "69,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "70,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "71,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "72,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "73,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "74,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "75,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "76,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "77,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "78,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "79,8": {
-          "tileId": 38,
-          "flipX": false
-        },
-        "83,8": {
-          "tileId": 36,
-          "flipX": false
-        },
-        "84,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "85,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "86,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "87,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "88,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "89,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "90,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "91,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "92,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "93,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "94,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "95,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "96,8": {
-          "tileId": 38,
-          "flipX": false
-        },
-        "100,8": {
-          "tileId": 36,
-          "flipX": false
-        },
-        "101,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "102,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "103,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "104,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "105,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "106,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "107,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "108,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "109,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "110,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "111,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "112,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "113,8": {
-          "tileId": 38,
-          "flipX": false
-        },
-        "115,8": {
-          "tileId": 36,
-          "flipX": false
-        },
-        "116,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "117,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "118,8": {
-          "tileId": 38,
-          "flipX": false
-        },
-        "6,5": {
-          "tileId": 19,
-          "flipX": false
-        },
-        "7,5": {
-          "tileId": 19,
-          "flipX": false
-        },
-        "8,5": {
-          "tileId": 19,
-          "flipX": false
-        },
-        "17,5": {
-          "tileId": 19,
-          "flipX": false
-        },
-        "21,5": {
-          "tileId": 19,
-          "flipX": false
-        },
         "5,2": {
           "tileId": 16,
           "flipX": false
@@ -435,22 +51,6 @@
           "flipX": false
         },
         "46,1": {
-          "tileId": 17,
-          "flipX": false
-        },
-        "56,3": {
-          "tileId": 16,
-          "flipX": false
-        },
-        "57,3": {
-          "tileId": 17,
-          "flipX": false
-        },
-        "63,1": {
-          "tileId": 16,
-          "flipX": false
-        },
-        "64,1": {
           "tileId": 17,
           "flipX": false
         },
@@ -501,88 +101,20 @@
         "115,1": {
           "tileId": 17,
           "flipX": false
+        },
+        "64,4": {
+          "tileId": 16,
+          "flipX": false
+        },
+        "65,4": {
+          "tileId": 17,
+          "flipX": false
         }
       }
     },
     {
       "id": "layer-collision",
       "name": "Collision",
-      "visible": true,
-      "opacity": 0.5,
-      "data": {
-        "0,8": {
-          "tileId": 36,
-          "flipX": false
-        },
-        "1,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "2,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "3,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "4,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "5,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "6,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "7,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "8,8": {
-          "tileId": 38,
-          "flipX": false
-        },
-        "0,7": {
-          "tileId": 36,
-          "flipX": false
-        },
-        "1,7": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "2,7": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "3,7": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "4,7": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "5,7": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "6,7": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "7,7": {
-          "tileId": 38,
-          "flipX": false
-        }
-      }
-    },
-    {
-      "id": "layer-1",
-      "name": "Terrain",
       "visible": true,
       "opacity": 1,
       "data": {
@@ -619,26 +151,437 @@
           "flipX": false
         },
         "8,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "9,8": {
-          "tileId": 37,
-          "flipX": false
-        },
-        "10,8": {
-          "tileId": 37,
+          "tileId": 38,
           "flipX": false
         },
         "11,8": {
-          "tileId": 37,
+          "tileId": 36,
           "flipX": false
         },
         "12,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "13,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "14,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "15,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "16,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "17,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "18,8": {
           "tileId": 38,
+          "flipX": false
+        },
+        "22,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "23,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "24,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "25,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "26,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "27,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "28,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "29,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "30,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "35,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "36,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "37,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "38,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "39,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "40,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "41,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "42,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "43,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "44,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "53,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "54,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "55,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "58,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "60,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "62,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "64,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "65,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "66,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "67,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "68,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "69,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "70,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "72,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "73,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "74,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "75,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "76,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "77,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "78,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "79,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "80,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "81,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "82,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "83,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "86,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "87,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "88,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "89,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "90,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "91,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "92,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "93,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "94,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "95,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "96,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "97,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "100,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "101,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "102,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "106,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "107,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "108,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "109,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "110,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "111,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "112,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "115,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "116,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "117,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "118,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "119,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "6,5": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "7,5": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "46,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "47,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "48,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "49,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "50,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "51,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "48,6": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "50,5": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "52,4": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "54,3": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "56,2": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "58,2": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "59,2": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "60,2": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "61,2": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "62,2": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "63,2": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "28,7": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "42,7": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "69,7": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "88,7": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "92,7": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "96,7": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "107,7": {
+          "tileId": 19,
           "flipX": false
         }
       }
+    },
+    {
+      "id": "layer-1",
+      "name": "Terrain",
+      "visible": true,
+      "opacity": 0.2,
+      "data": {}
     }
   ],
   "mapSize": {
