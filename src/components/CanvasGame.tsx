@@ -241,6 +241,18 @@ export const CanvasGame = () => {
         });
     }, [])
 
+    const [debugMode, setDebugMode] = useState(false);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.code === 'Backquote') {
+                setDebugMode(prev => !prev);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
     const draw = useCallback(() => {
         const canvas = canvasRef.current;
         if (!canvas || !character.current || !renderer.current || !enemies.current) {
@@ -258,10 +270,6 @@ export const CanvasGame = () => {
 
         ctx.save();
         ctx.translate(-cameraX, 0);
-
-        // Draw Floor (extend to right) -> REPLACED BY TILEMAP
-        // ctx.fillStyle = '#333';
-        // ctx.fillRect(0, 500, 20000, canvas.height - 500);
 
         // Draw Map
         if (tileMap.current) {
@@ -287,9 +295,6 @@ export const CanvasGame = () => {
         enemies.current.forEach(enemy => {
             const enemyType = enemy.type;
             const enemyState = enemy.state;
-
-            // Get correct image for enemy instance
-            // Key format: TYPE_STATE (e.g., TROLL_RUN)
             const imgKey = `${enemyType}_${enemyState}`;
             const img = images.current[imgKey];
 
@@ -305,15 +310,9 @@ export const CanvasGame = () => {
                     ENEMY_FRAME_COUNTS[enemyType][enemyState] || 1
                 );
             } else {
-                // Fallback Draw
                 ctx.fillStyle = enemy.isHit ? 'white' : (enemyType === 'TROLL' ? 'green' : 'orange');
                 ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
             }
-
-            // Debug Draw
-            // const eHurt = enemy.getHurtbox();
-            // ctx.strokeStyle = '#00FF00'; 
-            // ctx.strokeRect(eHurt.x, eHurt.y, eHurt.width, eHurt.height);
 
             // Draw Health Bar
             const barWidth = 40;
@@ -322,45 +321,44 @@ export const CanvasGame = () => {
             const barX = enemy.x - barWidth / 2;
             const barY = enemy.y - enemy.height - 10;
 
-            // Background (Red)
             ctx.fillStyle = 'red';
             ctx.fillRect(barX, barY, barWidth, barHeight);
-
-            // Foreground (Green)
             ctx.fillStyle = '#00FF00';
             ctx.fillRect(barX, barY, barWidth * healthPct, barHeight);
 
             // --- DEBUG VISUALS ---
-            // 1. Draw Enemy Hurtbox (Blue)
-            const eHurt = enemy.getHurtbox();
-            ctx.strokeStyle = 'blue';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(eHurt.x, eHurt.y, eHurt.width, eHurt.height);
+            if (debugMode) {
+                // 1. Draw Enemy Hurtbox (Blue)
+                const eHurt = enemy.getHurtbox();
+                ctx.strokeStyle = 'blue';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(eHurt.x, eHurt.y, eHurt.width, eHurt.height);
 
-            // 2. Draw State Text
-            ctx.fillStyle = 'white';
-            ctx.font = '12px Arial';
-            ctx.fillText(enemy.state, enemy.x - 20, enemy.y - enemy.height - 20);
+                // 2. Draw State Text
+                ctx.fillStyle = 'white';
+                ctx.font = '12px Arial';
+                ctx.fillText(enemy.state, enemy.x - 20, enemy.y - enemy.height - 20);
 
-            // 3. Draw Attack Hitbox (Yellow) if attacking (Simulated for visual)
-            let attackRange = 0;
-            if (enemy.state === 'ATTACK') {
-                if (enemy.type === 'SPAMMER' && enemy.attackTimer > 10 && enemy.attackTimer < 30) {
-                    attackRange = 10;
-                } else if (enemy.type === 'TROLL' && enemy.attackTimer > 20 && enemy.attackTimer < 40) {
-                    attackRange = 1;
+                // 3. Draw Attack Hitbox (Yellow)
+                let attackRange = 0;
+                if (enemy.state === 'ATTACK') {
+                    if (enemy.type === 'SPAMMER' && enemy.attackTimer > 10 && enemy.attackTimer < 30) {
+                        attackRange = 10;
+                    } else if (enemy.type === 'TROLL' && enemy.attackTimer > 20 && enemy.attackTimer < 40) {
+                        attackRange = 1;
+                    }
                 }
-            }
-            if (attackRange > 0) {
-                const attackHitbox = {
-                    x: enemy.direction === -1 ? enemy.x + 20 : enemy.x - 20 - attackRange,
-                    y: enemy.y - 40,
-                    width: attackRange,
-                    height: 40
-                };
-                ctx.strokeStyle = 'yellow';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(attackHitbox.x, attackHitbox.y, attackHitbox.width, attackHitbox.height);
+                if (attackRange > 0) {
+                    const attackHitbox = {
+                        x: enemy.direction === -1 ? enemy.x + 20 : enemy.x - 20 - attackRange,
+                        y: enemy.y - 40,
+                        width: attackRange,
+                        height: 40
+                    };
+                    ctx.strokeStyle = 'yellow';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(attackHitbox.x, attackHitbox.y, attackHitbox.width, attackHitbox.height);
+                }
             }
         });
 
@@ -376,14 +374,20 @@ export const CanvasGame = () => {
         });
 
         // Debug Player Hitbox
-        const cHit = character.current.getHitbox();
-        if (cHit) {
-            ctx.strokeStyle = '#FF0000';
-            ctx.strokeRect(cHit.x, cHit.y, cHit.width, cHit.height);
+        if (debugMode) {
+            const cHit = character.current.getHitbox();
+            if (cHit) {
+                ctx.strokeStyle = '#FF0000';
+                ctx.strokeRect(cHit.x, cHit.y, cHit.width, cHit.height);
+            }
+            // Also draw player hurtbox for clarity in debug
+            const pHurt = character.current.getHurtbox();
+            ctx.strokeStyle = 'green';
+            ctx.strokeRect(pHurt.x, pHurt.y, pHurt.width, pHurt.height);
         }
 
         ctx.restore();
-    }, [images]);
+    }, [images, debugMode]);
 
     useGameLoop({ onUpdate: update, onDraw: draw });
 
