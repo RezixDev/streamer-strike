@@ -3,6 +3,8 @@ interface TileData {
     flipX: boolean;
 }
 
+import { Physics } from './Physics';
+
 interface MapLayer {
     id: string;
     name: string;
@@ -133,12 +135,17 @@ export class TileMap {
                 for (let y = startY; y <= endY; y++) {
                     const key = `${x},${y}`;
                     if (layer.data[key]) {
-                        collisions.push({
+                        const tileRect = {
                             x: x * this.tileSize,
                             y: y * this.tileSize,
                             width: this.tileSize,
                             height: this.tileSize
-                        });
+                        };
+
+                        // Strict check: Only return if actually intersecting
+                        if (Physics.checkCollision(rect, tileRect)) {
+                            collisions.push(tileRect);
+                        }
                     }
                 }
             }

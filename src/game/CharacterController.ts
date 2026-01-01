@@ -42,10 +42,10 @@ export class CharacterController {
     public animationTimer: number = 0;
     public isGrounded: boolean = false;
 
-    private readonly MOVE_SPEED = 0.02;
-    private readonly JUMP_FORCE = -1;
+    private readonly MOVE_SPEED = 0.05; // Was 0.02
+    private readonly JUMP_FORCE = -1.6; // Was -1.0
     private readonly GRAVITY = 0.08;
-    private readonly FRICTION = 0.85;
+    private readonly FRICTION = 0.90; // Was 0.85
     private readonly FLOOR_Y = 500;
 
     public hp: number = 100;
@@ -113,8 +113,9 @@ export class CharacterController {
                 // But we want to slide
 
                 // Let's rely on resolving against the specific tile hit
-                const resolution = Physics.resolveCollision(hurtbox, collisions[0]); // Naive check against first
-                this.x += resolution.x;
+                // FORCE X Resolution
+                const resolutionX = Physics.resolveCollisionX(hurtbox, collisions[0]);
+                this.x += resolutionX;
                 this.vx = 0;
             }
         }
@@ -128,13 +129,14 @@ export class CharacterController {
             const collisions = map.getCollisions(hurtbox);
             if (collisions.length > 0) {
                 // Assume floor/ceiling
-                const resolution = Physics.resolveCollision(hurtbox, collisions[0]); // Naive
-                this.y += resolution.y;
+                // FORCE Y Resolution
+                const resolutionY = Physics.resolveCollisionY(hurtbox, collisions[0]);
+                this.y += resolutionY;
 
-                if (resolution.y < 0) { // Push up = Floor
+                if (resolutionY < 0) { // Push up = Floor
                     this.isGrounded = true;
                     this.vy = 0;
-                } else if (resolution.y > 0) { // Push down = Ceiling
+                } else if (resolutionY > 0) { // Push down = Ceiling
                     this.vy = 0;
                 }
             }

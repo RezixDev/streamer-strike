@@ -68,8 +68,8 @@ export class Enemy {
             const hurtbox = this.getHurtbox();
             const collisions = map.getCollisions(hurtbox);
             if (collisions.length > 0) {
-                const resolution = Physics.resolveCollision(hurtbox, collisions[0]);
-                this.x += resolution.x;
+                const resolutionX = Physics.resolveCollisionX(hurtbox, collisions[0]);
+                this.x += resolutionX;
             }
         }
 
@@ -82,9 +82,9 @@ export class Enemy {
             const hurtbox = this.getHurtbox();
             const collisions = map.getCollisions(hurtbox);
             if (collisions.length > 0) {
-                const resolution = Physics.resolveCollision(hurtbox, collisions[0]);
-                this.y += resolution.y;
-                if (resolution.y < 0) this.vy = 0; // Grounded
+                const resolutionY = Physics.resolveCollisionY(hurtbox, collisions[0]);
+                this.y += resolutionY;
+                if (resolutionY < 0) this.vy = 0; // Grounded
             }
         } else {
             // Fallback floor if no map
@@ -95,7 +95,7 @@ export class Enemy {
         }
     }
 
-    private updateSpammer(dt: number, distance: number): number {
+    private updateSpammer(_dt: number, distance: number): number {
         // Spammer Logic: Walks towards player, always
         if (this.attackTimer > 0) {
             this.attackTimer--;
@@ -117,7 +117,7 @@ export class Enemy {
         return vx;
     }
 
-    private updateTroll(dt: number, distance: number): number {
+    private updateTroll(_dt: number, distance: number): number {
         if (this.attackTimer > 0) {
             this.attackTimer--;
             this.state = 'ATTACK';

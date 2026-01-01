@@ -51,5 +51,29 @@ export const Physics = {
             }
         }
         return { x: 0, y: 0 };
+    },
+
+    resolveCollisionX: (rect1: Rectangle, rect2: Rectangle): number => {
+        const overlapX1 = (rect1.x + rect1.width) - rect2.x;
+        const overlapX2 = (rect2.x + rect2.width) - rect1.x;
+
+        // Push Left
+        if (overlapX1 < overlapX2) {
+            return -overlapX1;
+        } else {
+            return overlapX2;
+        }
+    },
+
+    resolveCollisionY: (rect1: Rectangle, rect2: Rectangle): number => {
+        const overlapY1 = (rect1.y + rect1.height) - rect2.y;
+        const overlapY2 = (rect2.y + rect2.height) - rect1.y;
+
+        // Push Up
+        if (overlapY1 < overlapY2) {
+            return -overlapY1;
+        } else {
+            return overlapY2;
+        }
     }
 };
