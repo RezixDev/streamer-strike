@@ -72,7 +72,7 @@ export const CHARACTERS: Record<string, CharacterConfig> = {
             [CharacterState.JUMPING]: 8,
             [CharacterState.ATTACKING]: 6,
             [CharacterState.JAB]: 3,
-            [CharacterState.STRONG_PUNCH]: 6,
+            [CharacterState.STRONG_PUNCH]: 7,
             [CharacterState.WEAK_PUNCH]: 6,
             [CharacterState.TORNADO_KICK]: 6,
             [CharacterState.SWEEP_KICK]: 6,
