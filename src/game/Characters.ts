@@ -10,6 +10,11 @@ export interface CharacterConfig {
     selectionFrameCount: number; // Frames in the portrait animation
     assets: Record<CharacterState, string>;
     frameCounts: Record<CharacterState, number>;
+    hitboxConfig?: {
+        widthReduction: number;
+        heightReduction: number;
+        offsetY: number; // Vertical offset for rendering logic
+    };
 }
 
 export const CHARACTERS: Record<string, CharacterConfig> = {
@@ -71,6 +76,16 @@ export const CHARACTERS: Record<string, CharacterConfig> = {
             [CharacterState.WEAK_PUNCH]: 6,
             [CharacterState.TORNADO_KICK]: 6,
             [CharacterState.SWEEP_KICK]: 6,
+        },
+        hitboxConfig: {
+            widthReduction: 24, // Standard reduction
+            heightReduction: 40, // Reduce height significantly (64 - 40 = 24px tall hitbox?) No, let's try conservative.
+            // visual feet at 41px (64-23).
+            // drawn at y-64.
+            // we want visual feet at y.
+            // so we draw at y-64+23 = y-41.
+            // offset Y should be +23.
+            offsetY: 23
         }
     }
 };

@@ -13,6 +13,7 @@ import { CHARACTERS } from '../game/Characters';
 // Helper to prepend base path
 const BASE = import.meta.env.BASE_URL;
 
+
 // ENEMY_ASSETS and other constants remain...
 
 const ENEMY_ASSETS = {
@@ -40,6 +41,9 @@ const COLLECTIBLE_ASSETS = {
 };
 
 export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) => {
+
+    const [debugMode, setDebugMode] = useState(true);
+
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [_, setTick] = useState(0); // Force render for UI updates
     const [gameOver, setGameOver] = useState(false);
@@ -58,6 +62,8 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
     // Initialize Game Objects
     useEffect(() => {
         inputHandler.current = new InputHandler();
+
+        // Use config for initial size if available (optional support, future proofing)
         character.current = new CharacterController({ x: 100, y: 100 }); // Spawn higher
 
         // Initialize TileMap
@@ -224,7 +230,6 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
         });
     }, [])
 
-    const [debugMode, setDebugMode] = useState(false);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -262,16 +267,18 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
         // Draw Character
         const currentState = character.current.state;
         const currentImage = images.current[currentState] || null;
+        const charConfig = CHARACTERS[characterId];
+        const offsetY = charConfig.hitboxConfig?.offsetY || 0;
 
         renderer.current.draw(
             ctx,
             currentImage,
             character.current.x,
-            character.current.y,
+            character.current.y + offsetY, // Apply visual offset
             character.current.width,
             character.current.height,
             character.current.direction,
-            CHARACTERS[characterId].frameCounts[currentState as CharacterState] || 1
+            charConfig.frameCounts[currentState as CharacterState] || 1
         );
 
         // Draw Enemies
