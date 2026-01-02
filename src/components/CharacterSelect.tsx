@@ -34,15 +34,10 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({ onSelect }) =>
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [currentIndex]); // Re-bind on index change matters less here but good for closure capture if needed, mostly redundant if state uses functional updates but handleSelect needs fresh closure or refs.
-    // Actually handleSelect depends on currentIndex, so we need it in dependency or use a ref. 
-    // Simplified: re-bind is fine.
+    }, [currentIndex]);
 
     const currentChar = chars[currentIndex];
-
-    // Animation frames logic would go here. 
-    // For Hoka's rotation, we'll try a CSS animation with steps() assuming 8 frames for now.
-    // If it's a single image for Fresh, it will just show static.
+    const frameCount = currentChar.selectionFrameCount || 1;
 
     return (
         <div className="relative w-full h-screen bg-slate-900 flex flex-col items-center justify-center overflow-hidden">
@@ -69,14 +64,15 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({ onSelect }) =>
                         <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
 
                         {/* Character Sprite Display */}
-                        <div className="relative w-48 h-48 overflow-hidden image-pixelated">
-                            {/* We use a div background for sprite animation control */}
+                        <div className="relative w-48 h-48 overflow-hidden image-pixelated border-4 border-transparent">
+                            {/* Inner Slider for Animation */}
                             <div
-                                className="w-full h-full bg-no-repeat bg-contain bg-center"
+                                className="h-full absolute left-0 top-0 bg-contain bg-no-repeat bg-left"
                                 style={{
                                     backgroundImage: `url(${currentChar.portrait})`,
-                                    backgroundSize: `${currentChar.selectionFrameCount * 100}% 100%`,
-                                    animation: `sprite-play ${currentChar.selectionFrameCount * 0.15}s steps(${currentChar.selectionFrameCount}) infinite`,
+                                    width: `${frameCount * 100}%`, // Width matches number of frames
+                                    backgroundSize: '100% 100%', // Ensure the sheet fills the slider
+                                    animation: `sprite-slide ${frameCount * 0.15}s steps(${frameCount}) infinite`,
                                 }}
                             ></div>
                         </div>
@@ -105,9 +101,9 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({ onSelect }) =>
             </div>
 
             <style>{`
-                @keyframes sprite-play {
-                    from { background-position: 0 0; }
-                    to { background-position: 100% 0; }
+                @keyframes sprite-slide {
+                    from { transform: translateX(0); }
+                    to { transform: translateX(-100%); }
                 }
                 .image-pixelated {
                     image-rendering: pixelated;
