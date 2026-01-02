@@ -8,33 +8,12 @@ import { Physics } from '../game/Physics';
 import { Collectible } from '../game/Collectible';
 import { TileMap } from '../game/TileMap';
 
+import { CHARACTERS } from '../game/Characters';
+
 // Helper to prepend base path
 const BASE = import.meta.env.BASE_URL;
 
-const ASSETS = {
-    [CharacterState.IDLE]: `${BASE}sprites/fresh/idle.png`,
-    [CharacterState.RUNNING]: `${BASE}sprites/fresh/run.png`,
-    [CharacterState.JUMPING]: `${BASE}sprites/fresh/jump.png`,
-    [CharacterState.ATTACKING]: `${BASE}sprites/fresh/attack_kick.png`,
-    [CharacterState.JAB]: `${BASE}sprites/fresh/left_jab.png`,
-    [CharacterState.STRONG_PUNCH]: `${BASE}sprites/fresh/strong_punch.png`,
-    [CharacterState.WEAK_PUNCH]: `${BASE}sprites/fresh/weak_punch.png`,
-    [CharacterState.TORNADO_KICK]: `${BASE}sprites/fresh/tornado_kick.png`,
-    [CharacterState.SWEEP_KICK]: `${BASE}sprites/fresh/sweap_kick.png`,
-};
-
-// Frame counts for each state
-const FRAME_COUNTS = {
-    [CharacterState.IDLE]: 4,
-    [CharacterState.RUNNING]: 8,
-    [CharacterState.JUMPING]: 9,
-    [CharacterState.ATTACKING]: 6,
-    [CharacterState.JAB]: 3,
-    [CharacterState.STRONG_PUNCH]: 6,
-    [CharacterState.WEAK_PUNCH]: 6,
-    [CharacterState.TORNADO_KICK]: 4,
-    [CharacterState.SWEEP_KICK]: 7,
-};
+// ENEMY_ASSETS and other constants remain...
 
 const ENEMY_ASSETS = {
     SPAMMER: {
@@ -60,7 +39,7 @@ const COLLECTIBLE_ASSETS = {
     HEART: `${BASE}sprites/collectibles/heart.png`
 };
 
-export const CanvasGame = () => {
+export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [_, setTick] = useState(0); // Force render for UI updates
     const [gameOver, setGameOver] = useState(false);
@@ -92,8 +71,10 @@ export const CanvasGame = () => {
 
         renderer.current = new SpriteRenderer();
 
+
         // Load Player Images
-        Object.entries(ASSETS).forEach(([state, src]) => {
+        const charConfig = CHARACTERS[characterId];
+        Object.entries(charConfig.assets).forEach(([state, src]) => {
             const img = new Image();
             img.src = src;
             images.current[state] = img;
@@ -290,7 +271,7 @@ export const CanvasGame = () => {
             character.current.width,
             character.current.height,
             character.current.direction,
-            FRAME_COUNTS[currentState] || 1
+            CHARACTERS[characterId].frameCounts[currentState as CharacterState] || 1
         );
 
         // Draw Enemies
