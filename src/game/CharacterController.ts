@@ -43,19 +43,19 @@ export class CharacterController {
     public isGrounded: boolean = false;
     public safePosition: { x: number, y: number } = { x: 100, y: 100 };
 
-    private readonly MOVE_SPEED = 0.05; // Was 0.02
-    private readonly JUMP_FORCE = -1.3; // Was -1.6, lowered per request
-    private readonly GRAVITY = 0.08;
-    private readonly FRICTION = 0.90; // Was 0.85
+    private readonly MOVE_SPEED = 0.003; // Approx 0.05 / 16.67
+    private readonly JUMP_FORCE = -1.3; // Impulse remains same
+    private readonly GRAVITY = 0.005; // Approx 0.08 / 16.67
+    private readonly FRICTION = 0.90; // Base friction for 60fps
     private readonly FLOOR_Y = 500;
 
     public hp: number = 100;
     public maxHp: number = 100;
     public isHit: boolean = false;
-    public hitTimer: number = 0;
+    public hitTimer: number = 0; // In ms
 
-    // Animation durations (in ticks or ms - we'll use ticks/frames for now)
-    private readonly ATTACK_DURATION = 30;
+    // Animation durations (in ms)
+    private readonly ATTACK_DURATION = 500; // 30 frames * 16.67
 
     constructor({ x, y }: CharacterProps) {
         this.x = x;
@@ -66,28 +66,32 @@ export class CharacterController {
     public takeDamage(amount: number) {
         if (this.hitTimer > 0) return; // Invulnerable
         this.hp -= amount;
-        this.hitTimer = 30; // Frames of invulnerability
+        this.hitTimer = 500; // 500ms of invulnerability
         // Optional: Knockback?
     }
 
     public update(input: InputHandler, dt: number, map?: TileMap | null) {
-        if (this.hitTimer > 0) this.hitTimer--;
+        if (this.hitTimer > 0) this.hitTimer -= dt;
 
         // If attacking, lock movement and wait for animation to finish
         if (ATTACK_STATES.has(this.state)) {
-            this.animationTimer++;
+            this.animationTimer += dt;
             if (this.animationTimer >= this.ATTACK_DURATION) {
                 this.setState(CharacterState.IDLE);
             }
             // Apply gravity and friction even while attacking (can jump attack?)
             // For this simplified version, let's assume grounded attack completely stops x movement
             if (this.y >= this.FLOOR_Y) {
-                this.vx *= 0.5; // Strong friction
+                // Apply friction scaled by time
+                // standard friction is 0.5 per frame for attacking ground?
+                // Let's make it strong: 0.01 remains after 100ms
+                const frictionFactor = Math.pow(0.5, dt / 16.67);
+                this.vx *= frictionFactor;
             } else {
-                this.vy += this.GRAVITY; // Still fall if air attacking
+                this.vy += this.GRAVITY * dt; // Still fall if air attacking
             }
         } else {
-            this.handleMovement(input);
+            this.handleMovement(input, dt);
         }
 
         // Apply Physics (X Axis)
@@ -191,20 +195,23 @@ export class CharacterController {
         }
     }
 
-    private handleMovement(input: InputHandler) {
+    private handleMovement(input: InputHandler, dt: number) {
         // Horizontal Movement
         if (input.isDown('KeyA')) {
-            this.vx -= this.MOVE_SPEED;
+            this.vx -= this.MOVE_SPEED * dt; // Acceleration scaled by time
             this.direction = -1;
             if (this.state !== CharacterState.JUMPING) this.setState(CharacterState.RUNNING);
         } else if (input.isDown('KeyD')) {
-            this.vx += this.MOVE_SPEED;
+            this.vx += this.MOVE_SPEED * dt; // Acceleration scaled by time
             this.direction = 1;
             if (this.state !== CharacterState.JUMPING) this.setState(CharacterState.RUNNING);
         } else {
-            // Friction
-            this.vx *= this.FRICTION;
-            if (Math.abs(this.vx) < 0.1) {
+            // Friction scaled by time
+            // FRICTION is per-frame factor (0.90)
+            const frictionFactor = Math.pow(this.FRICTION, dt / 16.67);
+            this.vx *= frictionFactor;
+
+            if (Math.abs(this.vx) < 0.01) { // Threshold reduced for small dt steps
                 this.vx = 0;
                 if (this.state !== CharacterState.JUMPING) this.setState(CharacterState.IDLE);
             }
@@ -218,7 +225,7 @@ export class CharacterController {
         }
 
         // Gravity
-        this.vy += this.GRAVITY;
+        this.vy += this.GRAVITY * dt;
     }
 
     public setState(newState: CharacterState) {
@@ -255,8 +262,8 @@ export class CharacterController {
     public getHitbox(): Rectangle | null {
         if (!ATTACK_STATES.has(this.state)) return null;
 
-        // Only active during middle frames
-        if (this.animationTimer < 5 || this.animationTimer > 20) return null;
+        // Only active during middle frames (approx 83ms to 333ms)
+        if (this.animationTimer < 83 || this.animationTimer > 333) return null;
 
         const range = 2;
         const hitboxHeight = 60;

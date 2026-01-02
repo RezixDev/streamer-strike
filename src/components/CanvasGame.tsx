@@ -42,7 +42,7 @@ const COLLECTIBLE_ASSETS = {
 
 export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) => {
 
-    const [debugMode, setDebugMode] = useState(true);
+    const [debugMode, setDebugMode] = useState(false);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [_, setTick] = useState(0); // Force render for UI updates
@@ -150,13 +150,13 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
             }
 
             // Enemy Attack Damage (Active frames simulation)
-            // Spammer Attack: Timer 20-30 (Duration 40)
-            // Troll Attack: Timer 20-40 (Duration 60)
+            // Spammer Attack: Timer started at 667ms. Active between 167ms and 500ms (remaining)
+            // Troll Attack: Timer started at 1000ms. Active between 333ms and 667ms (remaining)
             let attackRange = 0;
             if (enemy.state === 'ATTACK') {
-                if (enemy.type === 'SPAMMER' && enemy.attackTimer > 10 && enemy.attackTimer < 30) {
+                if (enemy.type === 'SPAMMER' && enemy.attackTimer > 167 && enemy.attackTimer < 500) {
                     attackRange = 40;
-                } else if (enemy.type === 'TROLL' && enemy.attackTimer > 20 && enemy.attackTimer < 40) {
+                } else if (enemy.type === 'TROLL' && enemy.attackTimer > 333 && enemy.attackTimer < 667) {
                     attackRange = 60;
                 }
             }
@@ -241,7 +241,7 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    const draw = useCallback(() => {
+    const draw = useCallback((dt: number) => {
         const canvas = canvasRef.current;
         if (!canvas || !character.current || !renderer.current || !enemies.current) {
             return;
@@ -278,7 +278,8 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
             character.current.width,
             character.current.height,
             character.current.direction,
-            charConfig.frameCounts[currentState as CharacterState] || 1
+            charConfig.frameCounts[currentState as CharacterState] || 1,
+            dt
         );
 
         // Draw Enemies
@@ -297,7 +298,8 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
                     enemy.width,
                     enemy.height,
                     enemy.direction,
-                    ENEMY_FRAME_COUNTS[enemyType][enemyState] || 1
+                    ENEMY_FRAME_COUNTS[enemyType][enemyState] || 1,
+                    dt
                 );
             } else {
                 ctx.fillStyle = enemy.isHit ? 'white' : (enemyType === 'TROLL' ? 'green' : 'orange');
@@ -332,9 +334,9 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
                 // 3. Draw Attack Hitbox (Yellow)
                 let attackRange = 0;
                 if (enemy.state === 'ATTACK') {
-                    if (enemy.type === 'SPAMMER' && enemy.attackTimer > 10 && enemy.attackTimer < 30) {
+                    if (enemy.type === 'SPAMMER' && enemy.attackTimer > 167 && enemy.attackTimer < 500) {
                         attackRange = 10;
-                    } else if (enemy.type === 'TROLL' && enemy.attackTimer > 20 && enemy.attackTimer < 40) {
+                    } else if (enemy.type === 'TROLL' && enemy.attackTimer > 333 && enemy.attackTimer < 667) {
                         attackRange = 1;
                     }
                 }

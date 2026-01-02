@@ -15,12 +15,12 @@ export class Enemy {
     public type: EnemyType;
     public state: EnemyState = 'IDLE';
     public vy: number = 0;
-    private readonly GRAVITY = 0.08;
+    private readonly GRAVITY = 0.005; // 0.08 / 16.67
     private readonly FLOOR_Y = 500; // Fallback
 
     public isHit: boolean = false;
-    public hitTimer: number = 0;
-    public attackTimer: number = 0;
+    public hitTimer: number = 0; // ms
+    public attackTimer: number = 0; // ms
     public direction: 1 | -1 = -1; // Default face left
 
     // Renderer per enemy instance to track own animation frame
@@ -42,7 +42,7 @@ export class Enemy {
 
     public update(dt: number, targetX: number, map?: TileMap | null) {
         if (this.hitTimer > 0) {
-            this.hitTimer--;
+            this.hitTimer -= dt;
             this.isHit = this.hitTimer > 0;
             this.state = 'HIT';
             return;
@@ -74,7 +74,7 @@ export class Enemy {
         }
 
         // Apply Gravity (Y Movement)
-        this.vy += this.GRAVITY;
+        this.vy += this.GRAVITY * dt;
         this.y += this.vy * dt;
 
         // Resolve Y Collision
@@ -98,17 +98,18 @@ export class Enemy {
     private updateSpammer(_dt: number, distance: number): number {
         // Spammer Logic: Walks towards player, always
         if (this.attackTimer > 0) {
-            this.attackTimer--;
+            this.attackTimer -= _dt;
             this.state = 'ATTACK';
             return 0;
         }
 
         let vx = 0;
         if (Math.abs(distance) < 35) { // Close range
-            this.attackTimer = 40;
+            this.attackTimer = 667; // 40 frames * 16.67
             this.state = 'ATTACK';
         } else if (Math.abs(distance) > 35) {
-            vx = Math.sign(distance) * 0.015;
+            // 0.015 per frame => 0.0009 per ms
+            vx = Math.sign(distance) * 0.0009;
             this.direction = distance > 0 ? -1 : 1;
             this.state = 'RUN';
         } else {
@@ -119,17 +120,18 @@ export class Enemy {
 
     private updateTroll(_dt: number, distance: number): number {
         if (this.attackTimer > 0) {
-            this.attackTimer--;
+            this.attackTimer -= _dt;
             this.state = 'ATTACK';
             return 0;
         }
 
         let vx = 0;
         if (Math.abs(distance) < 30) {
-            this.attackTimer = 60;
+            this.attackTimer = 1000; // 60 frames * 16.67
             this.state = 'ATTACK';
         } else if (Math.abs(distance) < 400) {
-            vx = Math.sign(distance) * 0.01;
+            // 0.01 per frame => 0.0006 per ms
+            vx = Math.sign(distance) * 0.0006;
             this.direction = distance > 0 ? -1 : 1;
             this.state = 'RUN';
         } else {
@@ -141,7 +143,7 @@ export class Enemy {
     public takeDamage(amount: number) {
         this.hp -= amount;
         this.isHit = true;
-        this.hitTimer = 20; // Stunned
+        this.hitTimer = 333; // 20 frames -> 333ms
     }
 
     public getHurtbox(): Rectangle {

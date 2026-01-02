@@ -1,8 +1,8 @@
 export class SpriteRenderer {
-    // Ticks per frame control the speed of animation
-    // e.g., 6 ticks per frame means the frame changes every 6 update calls
-    private ticksPerFrame: number = 6;
-    private tickCount: number = 0;
+    // Speed of animation in ms per frame
+    // Defaulting to 100ms (10fps) which is roughly 6 frames at 60fps
+    private msPerFrame: number = 100;
+    private timer: number = 0;
     private currentFrame: number = 0;
 
     // Map states to spritesheets or row indices
@@ -17,7 +17,8 @@ export class SpriteRenderer {
         width: number,
         height: number,
         direction: 1 | -1,
-        frameCount: number // Total frames in this sprite strip
+        frameCount: number, // Total frames in this sprite strip
+        dt: number
     ) {
         if (!image || !image.complete || image.naturalWidth === 0) {
             // Fallback rectangle
@@ -26,9 +27,9 @@ export class SpriteRenderer {
             return;
         }
 
-        this.tickCount++;
-        if (this.tickCount > this.ticksPerFrame) {
-            this.tickCount = 0;
+        this.timer += dt;
+        if (this.timer > this.msPerFrame) {
+            this.timer = 0;
             this.currentFrame = (this.currentFrame + 1) % frameCount;
         }
 
@@ -63,6 +64,6 @@ export class SpriteRenderer {
 
     public resetAnimation() {
         this.currentFrame = 0;
-        this.tickCount = 0;
+        this.timer = 0;
     }
 }
