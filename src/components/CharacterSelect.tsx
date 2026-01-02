@@ -75,17 +75,8 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({ onSelect }) =>
                                 className="w-full h-full bg-no-repeat bg-contain bg-center"
                                 style={{
                                     backgroundImage: `url(${currentChar.portrait})`,
-                                    // Hacky guess: if hoka (rotation), assume spritesheet. If fresh (idle), mostly static or simple sheet.
-                                    // Ideally we'd know isSheet. For now, let's just show it.
-                                    // If Hoka's rotation is a strip, 'bg-contain' might squash it. 
-                                    // Let's try to detect or hardcode style based on ID.
-                                    ...(currentChar.id === 'HOKA' ? {
-                                        backgroundSize: '800% 100%', // Assume 8 frames
-                                        animation: 'sprite-play 1s steps(8) infinite',
-                                    } : {
-                                        backgroundSize: '400% 100%', // Fresh idle is 4 frames
-                                        animation: 'sprite-play 0.8s steps(4) infinite',
-                                    })
+                                    backgroundSize: `${currentChar.selectionFrameCount * 100}% 100%`,
+                                    animation: `sprite-play ${currentChar.selectionFrameCount * 0.15}s steps(${currentChar.selectionFrameCount}) infinite`,
                                 }}
                             ></div>
                         </div>

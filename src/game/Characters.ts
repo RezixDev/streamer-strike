@@ -7,6 +7,7 @@ export interface CharacterConfig {
     name: string;
     description: string;
     portrait: string; // Used for selection screen
+    selectionFrameCount: number; // Frames in the portrait animation
     assets: Record<CharacterState, string>;
     frameCounts: Record<CharacterState, number>;
 }
@@ -16,7 +17,8 @@ export const CHARACTERS: Record<string, CharacterConfig> = {
         id: 'FRESH',
         name: 'Fresh',
         description: 'The balanced fighter.',
-        portrait: `${BASE}sprites/fresh/idle.png`, // Fallback to idle for now
+        portrait: `${BASE}sprites/fresh/character_rotation.png`,
+        selectionFrameCount: 4,
         assets: {
             [CharacterState.IDLE]: `${BASE}sprites/fresh/idle.png`,
             [CharacterState.RUNNING]: `${BASE}sprites/fresh/run.png`,
@@ -45,6 +47,7 @@ export const CHARACTERS: Record<string, CharacterConfig> = {
         name: 'Hoka',
         description: 'A powerful brawler.',
         portrait: `${BASE}sprites/hoka/character_rotation.png`, // Special rotation sprite
+        selectionFrameCount: 8,
         assets: {
             [CharacterState.IDLE]: `${BASE}sprites/hoka/idle.png`,
             [CharacterState.RUNNING]: `${BASE}sprites/hoka/run.png`,
