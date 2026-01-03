@@ -1,0 +1,2787 @@
+# Codebase Export: /. folder
+Generated on: Sat Jan  3 15:37:53 CET 2026
+------------------------------------------------
+## Project Structure (/.)
+```
+.
+ |-- pnpm-lock.yaml
+ |-- tsconfig.node.json
+ |-- index.html
+ |-- tailwind.config.js
+ |-- tsconfig.app.json
+ |-- codebase_src_only.txt
+ |-- dist
+ | |-- index.html
+ | |-- sprites
+ | | |-- maps
+ | | | |-- map_spritesheet.png
+ | | | |-- level1
+ | | |-- collectibles
+ | | | |-- heart.png
+ | | |-- fresh
+ | | | |-- strong_punch.png
+ | | | |-- sweap_kick.png
+ | | | |-- jump.png
+ | | | |-- weak_punch.png
+ | | | |-- idle.png
+ | | | |-- run.png
+ | | | |-- tornado_kick.png
+ | | | |-- left_jab.png
+ | | | |-- attack_kick.png
+ | | |-- enemx
+ | | | |-- spammer
+ | | | |-- troll
+ | |-- assets
+ | | |-- index-povOUqkR.js
+ | | |-- index-zX-IU8Dv.css
+ |-- node_modules
+ | |-- @types
+ | | |-- react-dom
+ | | |-- node
+ | | |-- react
+ | |-- globals
+ | |-- @eslint
+ | | |-- js
+ | |-- typescript-eslint
+ | |-- @tailwindcss
+ | | |-- vite
+ | |-- typescript
+ | |-- eslint-plugin-react-hooks
+ | |-- @vitejs
+ | | |-- plugin-react-swc
+ | |-- react-dom
+ | |-- vite
+ | |-- eslint-plugin-react-refresh
+ | |-- eslint
+ | |-- tailwindcss
+ | |-- react
+ |-- README.md
+ |-- public
+ | |-- sprites
+ | | |-- maps
+ | | | |-- map_spritesheet.png
+ | | | |-- level1
+ | | |-- hoka
+ | | | |-- push_objects.png
+ | | | |-- picking_up.png
+ | | | |-- character_rotation.png
+ | | | |-- flying_kick.png
+ | | | |-- idle.png
+ | | | |-- uppercut_punch.png
+ | | | |-- run.png
+ | | | |-- walk.png
+ | | | |-- left_jab.png
+ | | | |-- punch.png
+ | | | |-- running_jump.png
+ | | |-- collectibles
+ | | | |-- heart.png
+ | | |-- fresh
+ | | | |-- strong_punch.png
+ | | | |-- sweap_kick.png
+ | | | |-- character_rotation.png
+ | | | |-- jump.png
+ | | | |-- weak_punch.png
+ | | | |-- idle.png
+ | | | |-- run.png
+ | | | |-- tornado_kick.png
+ | | | |-- left_jab.png
+ | | | |-- attack_kick.png
+ | | |-- enemx
+ | | | |-- spammer
+ | | | |-- troll
+ |-- package.json
+ |-- tsconfig.json
+ |-- eslint.config.js
+ |-- vite.config.ts
+ |-- src
+ | |-- App.tsx
+ | |-- main.tsx
+ | |-- App.css
+ | |-- index.css
+ | |-- game
+ | | |-- Collectible.ts
+ | | |-- Enemy.ts
+ | | |-- InputHandler.ts
+ | | |-- Characters.ts
+ | | |-- SpriteRenderer.ts
+ | | |-- Physics.ts
+ | | |-- CharacterController.ts
+ | | |-- TileMap.ts
+ | |-- components
+ | | |-- CharacterSelect.tsx
+ | | |-- CanvasGame.tsx
+ | |-- hooks
+ | | |-- useGameLoop.ts
+ |-- codebase.sh
+```
+
+## Project Files
+---
+### File: ./tsconfig.node.json
+```json
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "types": ["node"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": ["vite.config.ts"]
+}
+
+```
+
+---
+### File: ./index.html
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>streamer-strike</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+```
+
+---
+### File: ./tailwind.config.js
+```js
+/** @type {import('tailwindcss').Config} */
+export default {
+    content: [
+        "./index.html",
+        "./src/**/*.{js,ts,jsx,tsx}",
+    ],
+    theme: {
+        extend: {},
+    },
+    plugins: [],
+}
+
+```
+
+---
+### File: ./tsconfig.app.json
+```json
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "types": ["vite/client"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": ["src"]
+}
+
+```
+
+---
+### File: ./README.md
+```md
+# React + TypeScript + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## React Compiler
+
+The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
+
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
+
+```
+
+---
+### File: ./public/sprites/maps/level1/map_data_level1.json
+```json
+{
+  "layers": [
+    {
+      "id": "layer-bg",
+      "name": "Background",
+      "visible": true,
+      "opacity": 1,
+      "data": {
+        "5,2": {
+          "tileId": 16,
+          "flipX": false
+        },
+        "6,2": {
+          "tileId": 17,
+          "flipX": false
+        },
+        "13,1": {
+          "tileId": 16,
+          "flipX": false
+        },
+        "14,1": {
+          "tileId": 17,
+          "flipX": false
+        },
+        "20,2": {
+          "tileId": 16,
+          "flipX": false
+        },
+        "21,2": {
+          "tileId": 17,
+          "flipX": false
+        },
+        "28,1": {
+          "tileId": 16,
+          "flipX": false
+        },
+        "29,1": {
+          "tileId": 17,
+          "flipX": false
+        },
+        "35,3": {
+          "tileId": 16,
+          "flipX": false
+        },
+        "36,3": {
+          "tileId": 17,
+          "flipX": false
+        },
+        "45,1": {
+          "tileId": 16,
+          "flipX": false
+        },
+        "46,1": {
+          "tileId": 17,
+          "flipX": false
+        },
+        "73,3": {
+          "tileId": 16,
+          "flipX": false
+        },
+        "74,3": {
+          "tileId": 17,
+          "flipX": false
+        },
+        "83,1": {
+          "tileId": 16,
+          "flipX": false
+        },
+        "84,1": {
+          "tileId": 17,
+          "flipX": false
+        },
+        "90,3": {
+          "tileId": 16,
+          "flipX": false
+        },
+        "91,3": {
+          "tileId": 17,
+          "flipX": false
+        },
+        "99,1": {
+          "tileId": 16,
+          "flipX": false
+        },
+        "100,1": {
+          "tileId": 17,
+          "flipX": false
+        },
+        "108,3": {
+          "tileId": 16,
+          "flipX": false
+        },
+        "109,3": {
+          "tileId": 17,
+          "flipX": false
+        },
+        "114,1": {
+          "tileId": 16,
+          "flipX": false
+        },
+        "115,1": {
+          "tileId": 17,
+          "flipX": false
+        },
+        "64,4": {
+          "tileId": 16,
+          "flipX": false
+        },
+        "65,4": {
+          "tileId": 17,
+          "flipX": false
+        }
+      }
+    },
+    {
+      "id": "layer-collision",
+      "name": "Collision",
+      "visible": true,
+      "opacity": 1,
+      "data": {
+        "0,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "1,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "2,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "3,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "4,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "5,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "6,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "7,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "8,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "11,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "12,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "13,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "14,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "15,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "16,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "17,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "18,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "22,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "23,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "24,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "25,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "26,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "27,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "28,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "29,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "30,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "35,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "36,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "37,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "38,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "39,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "40,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "41,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "42,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "43,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "44,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "53,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "54,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "55,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "58,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "60,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "62,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "64,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "65,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "66,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "67,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "68,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "69,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "70,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "72,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "73,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "74,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "75,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "76,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "77,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "78,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "79,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "80,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "81,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "82,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "83,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "86,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "87,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "88,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "89,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "90,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "91,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "92,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "93,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "94,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "95,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "96,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "97,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "100,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "101,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "102,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "106,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "107,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "108,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "109,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "110,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "111,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "112,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "115,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "116,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "117,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "118,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "119,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "6,5": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "7,5": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "46,8": {
+          "tileId": 36,
+          "flipX": false
+        },
+        "47,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "48,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "49,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "50,8": {
+          "tileId": 37,
+          "flipX": false
+        },
+        "51,8": {
+          "tileId": 38,
+          "flipX": false
+        },
+        "48,6": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "50,5": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "52,4": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "54,3": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "56,2": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "58,2": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "59,2": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "60,2": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "61,2": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "62,2": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "63,2": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "28,7": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "42,7": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "69,7": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "88,7": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "92,7": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "96,7": {
+          "tileId": 19,
+          "flipX": false
+        },
+        "107,7": {
+          "tileId": 19,
+          "flipX": false
+        }
+      }
+    },
+    {
+      "id": "layer-1",
+      "name": "Terrain",
+      "visible": true,
+      "opacity": 0.2,
+      "data": {}
+    }
+  ],
+  "mapSize": {
+    "width": 120,
+    "height": 10
+  },
+  "gridSize": 64,
+  "tileGroups": {
+    "0cde348f-e3fc-49c4-8402-010b0cea87cf": {
+      "id": "0cde348f-e3fc-49c4-8402-010b0cea87cf",
+      "name": "Grizbd",
+      "role": "terrain",
+      "canResize": true,
+      "canFlip": false,
+      "allowInGeneration": true,
+      "left": [
+        36
+      ],
+      "middle": [
+        [
+          37
+        ]
+      ],
+      "right": [
+        38
+      ],
+      "single": [
+        37
+      ],
+      "height": 1,
+      "preview": [
+        36,
+        37,
+        38
+      ],
+      "verticalAlignments": [
+        "bottom"
+      ],
+      "density": 5
+    }
+  }
+}
+```
+
+---
+### File: ./package.json
+```json
+{
+  "name": "streamer-strike",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react-swc": "^4.2.2",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "vite": "^7.2.4"
+  }
+}
+
+```
+
+---
+### File: ./.github/workflows/static.yml
+```yml
+# Simple workflow for deploying static content to GitHub Pages
+name: Deploy static content to Pages
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Single deploy job since we're just deploying
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload dist repository
+          path: './dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+```
+
+---
+### File: ./tsconfig.json
+```json
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}
+
+```
+
+---
+### File: ./eslint.config.js
+```js
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import tseslint from 'typescript-eslint'
+import { defineConfig, globalIgnores } from 'eslint/config'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      tseslint.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+    },
+  },
+])
+
+```
+
+---
+### File: ./vite.config.ts
+```ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react-swc'
+import tailwindcss from "@tailwindcss/vite";
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react(), tailwindcss(),],
+  base: '/streamer-strike/',
+})
+
+```
+
+---
+### File: ./src/App.tsx
+```tsx
+import { useState } from 'react';
+import { CanvasGame } from './components/CanvasGame';
+import { CharacterSelect } from './components/CharacterSelect';
+
+function App() {
+  const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
+
+  if (!selectedCharacterId) {
+    return <CharacterSelect onSelect={setSelectedCharacterId} />;
+  }
+
+  return (
+    <CanvasGame characterId={selectedCharacterId} />
+  );
+}
+
+export default App;
+
+```
+
+---
+### File: ./src/main.tsx
+```tsx
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.tsx'
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+
+```
+
+---
+### File: ./src/App.css
+```css
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+```
+
+---
+### File: ./src/index.css
+```css
+@import "tailwindcss";
+
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow: hidden;
+  /* Prevent scrolling when game is fullscreen */
+  background-color: #1a1a1a;
+  color: white;
+}
+```
+
+---
+### File: ./src/game/Collectible.ts
+```ts
+import type { Rectangle } from './Physics';
+
+export type CollectibleType = 'HEART';
+
+export class Collectible {
+    public x: number;
+    public y: number;
+    public width: number = 32;
+    public height: number = 32;
+    public type: CollectibleType;
+    public collected: boolean = false;
+
+    constructor(x: number, y: number, type: CollectibleType) {
+        this.x = x;
+        this.y = y;
+        this.type = type;
+    }
+
+    public getHitbox(): Rectangle {
+        return {
+            x: this.x,
+            y: this.y,
+            width: this.width,
+            height: this.height
+        };
+    }
+}
+
+```
+
+---
+### File: ./src/game/Enemy.ts
+```ts
+import { Physics, type Rectangle } from './Physics';
+import { SpriteRenderer } from './SpriteRenderer';
+import { TileMap } from './TileMap';
+
+export type EnemyType = 'SPAMMER' | 'TROLL';
+export type EnemyState = 'IDLE' | 'RUN' | 'ATTACK' | 'HIT';
+
+export class Enemy {
+    public x: number;
+    public y: number;
+    public width: number = 64;
+    public height: number = 64;
+    public hp: number = 100;
+    public maxHp: number = 100;
+    public type: EnemyType;
+    public state: EnemyState = 'IDLE';
+    public vy: number = 0;
+    private readonly GRAVITY = 0.005; // 0.08 / 16.67
+    private readonly FLOOR_Y = 500; // Fallback
+
+    public isHit: boolean = false;
+    public hitTimer: number = 0; // ms
+    public attackTimer: number = 0; // ms
+    public direction: 1 | -1 = -1; // Default face left
+
+    // Renderer per enemy instance to track own animation frame
+    public renderer: SpriteRenderer;
+
+    constructor(x: number, y: number, type: EnemyType) {
+        this.x = x;
+        this.y = y;
+        this.type = type;
+        this.renderer = new SpriteRenderer();
+
+        if (type === 'SPAMMER') {
+            this.hp = 50;
+        } else {
+            this.hp = 150;
+        }
+        this.maxHp = this.hp;
+    }
+
+    public update(dt: number, targetX: number, map?: TileMap | null) {
+        if (this.hitTimer > 0) {
+            this.hitTimer -= dt;
+            this.isHit = this.hitTimer > 0;
+            this.state = 'HIT';
+            return;
+        }
+
+        const distance = targetX - this.x;
+
+        // Calculate desired X velocity based on AI
+        this.direction = distance > 0 ? -1 : 1; // Default facing logic (can be overridden by AI)
+
+        let vx = 0;
+        if (this.type === 'TROLL') {
+            vx = this.updateTroll(dt, distance);
+        } else {
+            vx = this.updateSpammer(dt, distance);
+        }
+
+        // Apply X Movement
+        this.x += vx * dt;
+
+        // Resolve X Collision
+        if (map) {
+            const hurtbox = this.getHurtbox();
+            const collisions = map.getCollisions(hurtbox);
+            if (collisions.length > 0) {
+                const resolutionX = Physics.resolveCollisionX(hurtbox, collisions[0]);
+                this.x += resolutionX;
+            }
+        }
+
+        // Apply Gravity (Y Movement)
+        this.vy += this.GRAVITY * dt;
+        this.y += this.vy * dt;
+
+        // Resolve Y Collision
+        if (map) {
+            const hurtbox = this.getHurtbox();
+            const collisions = map.getCollisions(hurtbox);
+            if (collisions.length > 0) {
+                const resolutionY = Physics.resolveCollisionY(hurtbox, collisions[0]);
+                this.y += resolutionY;
+                if (resolutionY < 0) this.vy = 0; // Grounded
+            }
+        } else {
+            // Fallback floor if no map
+            if (this.y >= this.FLOOR_Y) {
+                this.y = this.FLOOR_Y;
+                this.vy = 0;
+            }
+        }
+    }
+
+    private updateSpammer(_dt: number, distance: number): number {
+        // Spammer Logic: Walks towards player, always
+        if (this.attackTimer > 0) {
+            this.attackTimer -= _dt;
+            this.state = 'ATTACK';
+            return 0;
+        }
+
+        let vx = 0;
+        if (Math.abs(distance) < 35) { // Close range
+            this.attackTimer = 667; // 40 frames * 16.67
+            this.state = 'ATTACK';
+        } else if (Math.abs(distance) > 35) {
+            // 0.015 per frame => 0.0009 per ms
+            vx = Math.sign(distance) * 0.0009;
+            this.direction = distance > 0 ? -1 : 1;
+            this.state = 'RUN';
+        } else {
+            this.state = 'IDLE';
+        }
+        return vx;
+    }
+
+    private updateTroll(_dt: number, distance: number): number {
+        if (this.attackTimer > 0) {
+            this.attackTimer -= _dt;
+            this.state = 'ATTACK';
+            return 0;
+        }
+
+        let vx = 0;
+        if (Math.abs(distance) < 30) {
+            this.attackTimer = 1000; // 60 frames * 16.67
+            this.state = 'ATTACK';
+        } else if (Math.abs(distance) < 400) {
+            // 0.01 per frame => 0.0006 per ms
+            vx = Math.sign(distance) * 0.0006;
+            this.direction = distance > 0 ? -1 : 1;
+            this.state = 'RUN';
+        } else {
+            this.state = 'IDLE';
+        }
+        return vx;
+    }
+
+    public takeDamage(amount: number) {
+        this.hp -= amount;
+        this.isHit = true;
+        this.hitTimer = 333; // 20 frames -> 333ms
+    }
+
+    public getHurtbox(): Rectangle {
+        // x,y is Bottom-Center
+        const halfWidth = this.width / 2;
+        return {
+            x: this.x - halfWidth + 10,
+            y: this.y - this.height + 5,
+            width: this.width - 20,
+            height: this.height - 10
+        };
+    }
+}
+
+```
+
+---
+### File: ./src/game/InputHandler.ts
+```ts
+export class InputHandler {
+    public keys: Set<string>;
+
+    constructor() {
+        this.keys = new Set();
+        window.addEventListener('keydown', this.handleKeyDown);
+        window.addEventListener('keyup', this.handleKeyUp);
+    }
+
+    private handleKeyDown = (e: KeyboardEvent) => {
+        this.keys.add(e.code);
+    };
+
+    private handleKeyUp = (e: KeyboardEvent) => {
+        this.keys.delete(e.code);
+    };
+
+    public isDown(code: string): boolean {
+        return this.keys.has(code);
+    }
+
+    public destroy() {
+        window.removeEventListener('keydown', this.handleKeyDown);
+        window.removeEventListener('keyup', this.handleKeyUp);
+    }
+}
+
+```
+
+---
+### File: ./src/game/Characters.ts
+```ts
+import { CharacterState } from './CharacterController';
+
+const BASE = import.meta.env.BASE_URL;
+
+export interface CharacterConfig {
+    id: string;
+    name: string;
+    description: string;
+    portrait: string; // Used for selection screen
+    selectionFrameCount: number; // Frames in the portrait animation
+    assets: Record<CharacterState, string>;
+    frameCounts: Record<CharacterState, number>;
+    hitboxConfig?: {
+        widthReduction: number;
+        heightReduction: number;
+        offsetY: number; // Vertical offset for rendering logic
+    };
+}
+
+export const CHARACTERS: Record<string, CharacterConfig> = {
+    FRESH: {
+        id: 'FRESH',
+        name: 'Fresh',
+        description: 'The balanced fighter.',
+        portrait: `${BASE}sprites/fresh/character_rotation.png`,
+        selectionFrameCount: 4,
+        assets: {
+            [CharacterState.IDLE]: `${BASE}sprites/fresh/idle.png`,
+            [CharacterState.RUNNING]: `${BASE}sprites/fresh/run.png`,
+            [CharacterState.JUMPING]: `${BASE}sprites/fresh/jump.png`,
+            [CharacterState.ATTACKING]: `${BASE}sprites/fresh/attack_kick.png`,
+            [CharacterState.JAB]: `${BASE}sprites/fresh/left_jab.png`,
+            [CharacterState.STRONG_PUNCH]: `${BASE}sprites/fresh/strong_punch.png`,
+            [CharacterState.WEAK_PUNCH]: `${BASE}sprites/fresh/weak_punch.png`,
+            [CharacterState.TORNADO_KICK]: `${BASE}sprites/fresh/tornado_kick.png`,
+            [CharacterState.SWEEP_KICK]: `${BASE}sprites/fresh/sweap_kick.png`,
+        },
+        frameCounts: {
+            [CharacterState.IDLE]: 4,
+            [CharacterState.RUNNING]: 8,
+            [CharacterState.JUMPING]: 9,
+            [CharacterState.ATTACKING]: 6,
+            [CharacterState.JAB]: 3,
+            [CharacterState.STRONG_PUNCH]: 6,
+            [CharacterState.WEAK_PUNCH]: 6,
+            [CharacterState.TORNADO_KICK]: 4,
+            [CharacterState.SWEEP_KICK]: 7,
+        }
+    },
+    HOKA: {
+        id: 'HOKA',
+        name: 'Hoka',
+        description: 'A powerful brawler.',
+        portrait: `${BASE}sprites/hoka/character_rotation.png`, // Special rotation sprite
+        selectionFrameCount: 8,
+        assets: {
+            [CharacterState.IDLE]: `${BASE}sprites/hoka/idle.png`,
+            [CharacterState.RUNNING]: `${BASE}sprites/hoka/run.png`,
+            [CharacterState.JUMPING]: `${BASE}sprites/hoka/running_jump.png`,
+            [CharacterState.ATTACKING]: `${BASE}sprites/hoka/flying_kick.png`,
+            [CharacterState.JAB]: `${BASE}sprites/hoka/left_jab.png`,
+            [CharacterState.STRONG_PUNCH]: `${BASE}sprites/hoka/uppercut_punch.png`,
+            [CharacterState.WEAK_PUNCH]: `${BASE}sprites/hoka/punch.png`,
+            [CharacterState.TORNADO_KICK]: `${BASE}sprites/hoka/flying_kick.png`, // Reusing flying kick
+            [CharacterState.SWEEP_KICK]: `${BASE}sprites/hoka/punch.png`, // Reusing punch as fallback
+        },
+        frameCounts: {
+            // Estimates based on Fresh, should verify or load dynamically if possible. 
+            // Defaulting to reasonable numbers, likely 4-8.
+            [CharacterState.IDLE]: 4,
+            [CharacterState.RUNNING]: 8,
+            [CharacterState.JUMPING]: 8,
+            [CharacterState.ATTACKING]: 6,
+            [CharacterState.JAB]: 3,
+            [CharacterState.STRONG_PUNCH]: 7,
+            [CharacterState.WEAK_PUNCH]: 6,
+            [CharacterState.TORNADO_KICK]: 6,
+            [CharacterState.SWEEP_KICK]: 6,
+        },
+        hitboxConfig: {
+            widthReduction: 24, // Standard reduction
+            heightReduction: 40, // Reduce height significantly (64 - 40 = 24px tall hitbox?) No, let's try conservative.
+            // visual feet at 41px (64-23).
+            // drawn at y-64.
+            // we want visual feet at y.
+            // so we draw at y-64+23 = y-41.
+            // offset Y should be +23.
+            offsetY: 23
+        }
+    }
+};
+
+```
+
+---
+### File: ./src/game/SpriteRenderer.ts
+```ts
+export class SpriteRenderer {
+    // Speed of animation in ms per frame
+    // Defaulting to 100ms (10fps) which is roughly 6 frames at 60fps
+    private msPerFrame: number = 100;
+    private timer: number = 0;
+    private currentFrame: number = 0;
+
+    // Map states to spritesheets or row indices
+    // For now, let's assume we pass the specific image for the current state to the draw function
+    // or we can store a map here.
+
+    public draw(
+        ctx: CanvasRenderingContext2D,
+        image: HTMLImageElement | null,
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        direction: 1 | -1,
+        frameCount: number, // Total frames in this sprite strip
+        dt: number
+    ) {
+        if (!image || !image.complete || image.naturalWidth === 0) {
+            // Fallback rectangle
+            ctx.fillStyle = 'red';
+            ctx.fillRect(x - width / 2, y - height, width, height);
+            return;
+        }
+
+        this.timer += dt;
+        if (this.timer > this.msPerFrame) {
+            this.timer = 0;
+            this.currentFrame = (this.currentFrame + 1) % frameCount;
+        }
+
+        // Reset frame if it goes out of bounds (when switching animations)
+        if (this.currentFrame >= frameCount) {
+            this.currentFrame = 0;
+        }
+
+        ctx.save();
+        // Translate to the character's position to handle flipping correctly
+        ctx.translate(x, y);
+
+        // Flip if facing left
+        ctx.scale(direction, 1);
+
+        // Draw the sprite
+        // Assuming spritesheet is a horizontal strip
+        const frameWidth = image.width / frameCount;
+        const frameHeight = image.height;
+
+        // Draw centered horizontally, bottom-aligned vertically to (x, y)
+        // Destination X is -frameWidth/2 because we translated to x
+        // Destination Y is -frameHeight because we want y to be the feet
+        ctx.drawImage(
+            image,
+            this.currentFrame * frameWidth, 0, frameWidth, frameHeight,
+            -frameWidth / 2, -frameHeight, frameWidth, frameHeight
+        );
+
+        ctx.restore();
+    }
+
+    public resetAnimation() {
+        this.currentFrame = 0;
+        this.timer = 0;
+    }
+}
+
+```
+
+---
+### File: ./src/game/Physics.ts
+```ts
+export interface Rectangle {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
+export const Physics = {
+    checkCollision: (rect1: Rectangle | null, rect2: Rectangle | null): boolean => {
+        if (!rect1 || !rect2) return false;
+
+        return (
+            rect1.x < rect2.x + rect2.width &&
+            rect1.x + rect1.width > rect2.x &&
+            rect1.y < rect2.y + rect2.height &&
+            rect1.y + rect1.height > rect2.y
+        );
+    },
+
+    resolveCollision: (rect1: Rectangle, rect2: Rectangle): { x: number, y: number } => {
+        // Returns the translation vector to push rect1 out of rect2
+        // Find overlap on X and Y
+        const overlapX1 = (rect1.x + rect1.width) - rect2.x;
+        const overlapX2 = (rect2.x + rect2.width) - rect1.x;
+        const overlapY1 = (rect1.y + rect1.height) - rect2.y;
+        const overlapY2 = (rect2.y + rect2.height) - rect1.y;
+
+        // Find smallest overlap
+        const minX = Math.min(overlapX1, overlapX2);
+        const minY = Math.min(overlapY1, overlapY2);
+
+        // We only care about X axis separation for a side scroller beat 'em up usually
+        // But if we want 2D solid, we separate on the axis of least penetration
+        // For this game, actors are on the same "floor" Y-wise (mostly), so X separation is key.
+        // However, if we only separate X, we might get weird jumps.
+        // Let's separate on X only for now as requested "Player shouldn't ghost over enemies"
+
+        if (minX < minY) {
+            // Fix X
+            if (overlapX1 < overlapX2) {
+                return { x: -overlapX1, y: 0 }; // Push Left
+            } else {
+                return { x: overlapX2, y: 0 }; // Push Right
+            }
+        } else {
+            // Fix Y
+            if (overlapY1 < overlapY2) {
+                return { x: 0, y: -overlapY1 }; // Push Up
+            } else {
+                return { x: 0, y: overlapY2 }; // Push Down
+            }
+        }
+        return { x: 0, y: 0 };
+    },
+
+    resolveCollisionX: (rect1: Rectangle, rect2: Rectangle): number => {
+        const overlapX1 = (rect1.x + rect1.width) - rect2.x;
+        const overlapX2 = (rect2.x + rect2.width) - rect1.x;
+
+        // Push Left
+        if (overlapX1 < overlapX2) {
+            return -overlapX1;
+        } else {
+            return overlapX2;
+        }
+    },
+
+    resolveCollisionY: (rect1: Rectangle, rect2: Rectangle): number => {
+        const overlapY1 = (rect1.y + rect1.height) - rect2.y;
+        const overlapY2 = (rect2.y + rect2.height) - rect1.y;
+
+        // Push Up
+        if (overlapY1 < overlapY2) {
+            return -overlapY1;
+        } else {
+            return overlapY2;
+        }
+    }
+};
+
+```
+
+---
+### File: ./src/game/CharacterController.ts
+```ts
+import { InputHandler } from './InputHandler';
+import { TileMap } from './TileMap';
+import { Physics, type Rectangle } from './Physics';
+
+export const CharacterState = {
+    IDLE: 'IDLE',
+    RUNNING: 'RUNNING',
+    JUMPING: 'JUMPING',
+    ATTACKING: 'ATTACKING', // Standard Kick
+    JAB: 'JAB',
+    STRONG_PUNCH: 'STRONG_PUNCH',
+    WEAK_PUNCH: 'WEAK_PUNCH',
+    TORNADO_KICK: 'TORNADO_KICK',
+    SWEEP_KICK: 'SWEEP_KICK',
+} as const;
+
+export type CharacterState = typeof CharacterState[keyof typeof CharacterState];
+
+const ATTACK_STATES = new Set<CharacterState>([
+    CharacterState.ATTACKING,
+    CharacterState.JAB,
+    CharacterState.STRONG_PUNCH,
+    CharacterState.WEAK_PUNCH,
+    CharacterState.TORNADO_KICK,
+    CharacterState.SWEEP_KICK,
+]);
+
+interface CharacterProps {
+    x: number;
+    y: number;
+}
+
+export class CharacterController {
+    public x: number;
+    public y: number;
+    public vx: number = 0;
+    public vy: number = 0;
+    public width: number = 64; // 2x scale of 64px
+    public height: number = 64; // 2x scale of 64px
+    public state: CharacterState = CharacterState.IDLE;
+    public direction: 1 | -1 = 1; // 1 = right, -1 = left
+    public animationTimer: number = 0;
+    public isGrounded: boolean = false;
+    public safePosition: { x: number, y: number } = { x: 100, y: 100 };
+
+    private jumpCount: number = 0;
+    private readonly MAX_JUMPS: number = 2;
+    private canJump: boolean = true; // Requires key release to jump again
+
+    private readonly MOVE_SPEED = 0.0001; // Reduced from 0.003
+    private readonly JUMP_FORCE = -1.0; // Reduced from -1.3
+    private readonly GRAVITY = 0.005; // Approx 0.08 / 16.67
+    private readonly FRICTION = 0.90; // Base friction for 60fps
+    private readonly FLOOR_Y = 500;
+
+    public hp: number = 100;
+    public maxHp: number = 100;
+    public isHit: boolean = false;
+    public hitTimer: number = 0; // In ms
+
+    // Animation durations (in ms)
+    private readonly ATTACK_DURATION = 500; // 30 frames * 16.67
+
+    constructor({ x, y }: CharacterProps) {
+        this.x = x;
+        this.y = y;
+        this.safePosition = { x, y };
+    }
+
+    public takeDamage(amount: number) {
+        if (this.hitTimer > 0) return; // Invulnerable
+        this.hp -= amount;
+        this.hitTimer = 500; // 500ms of invulnerability
+        // Optional: Knockback?
+    }
+
+    public update(input: InputHandler, dt: number, map?: TileMap | null) {
+        if (this.hitTimer > 0) this.hitTimer -= dt;
+
+        // If attacking, lock movement and wait for animation to finish
+        if (ATTACK_STATES.has(this.state)) {
+            this.animationTimer += dt;
+            if (this.animationTimer >= this.ATTACK_DURATION) {
+                this.setState(CharacterState.IDLE);
+            }
+            // Apply gravity and friction even while attacking (can jump attack?)
+            // For this simplified version, let's assume grounded attack completely stops x movement
+            if (this.y >= this.FLOOR_Y) {
+                // Apply friction scaled by time
+                // standard friction is 0.5 per frame for attacking ground?
+                // Let's make it strong: 0.01 remains after 100ms
+                const frictionFactor = Math.pow(0.5, dt / 16.67);
+                this.vx *= frictionFactor;
+            } else {
+                this.vy += this.GRAVITY * dt; // Still fall if air attacking
+            }
+        } else {
+            this.handleMovement(input, dt);
+        }
+
+        // Apply Physics (X Axis)
+        this.x += this.vx * dt;
+
+        // Clamp X to Map Bounds
+        if (this.x < 0) {
+            this.x = 0;
+            this.vx = 0;
+        } else if (this.x > 7500) { // Slight buffer over win condition
+            this.x = 7500;
+            this.vx = 0;
+        }
+
+        if (map) {
+            const hurtbox = this.getHurtbox();
+            const collisions = map.getCollisions(hurtbox);
+            if (collisions.length > 0) {
+                // Simple resolution
+                // If moving right, snap to left set of tile
+                // If moving left, snap to right side of tile
+                // But multiple tiles...
+
+                // Better: Find the deepest penetration or first contact
+                // Simplest: Revert X if collision
+                // this.x -= this.vx * dt; 
+                // this.vx = 0;
+                // But we want to slide
+
+                // Let's rely on resolving against the specific tile hit
+                // FORCE X Resolution
+                const resolutionX = Physics.resolveCollisionX(hurtbox, collisions[0]);
+                this.x += resolutionX;
+                this.vx = 0;
+            }
+        }
+
+        // Apply Physics (Y Axis)
+        this.y += this.vy * dt;
+        this.isGrounded = false; // Reset grounded state, will be set true if collision with floor occurs
+
+        if (map) {
+            const hurtbox = this.getHurtbox();
+            const collisions = map.getCollisions(hurtbox);
+            if (collisions.length > 0) {
+                // Assume floor/ceiling
+                // FORCE Y Resolution
+                const resolutionY = Physics.resolveCollisionY(hurtbox, collisions[0]);
+                this.y += resolutionY;
+
+                if (resolutionY < 0) { // Push up = Floor
+                    this.isGrounded = true;
+                    this.vy = 0;
+                } else if (resolutionY > 0) { // Push down = Ceiling
+                    this.vy = 0;
+                }
+            }
+        } else {
+            // Hardcoded Floor
+            if (this.y >= this.FLOOR_Y) {
+                this.y = this.FLOOR_Y;
+                this.vy = 0;
+                this.isGrounded = true;
+            }
+        }
+
+        if (this.isGrounded) {
+            if (this.state === CharacterState.JUMPING) {
+                if (Math.abs(this.vx) > 0.1) {
+                    this.setState(CharacterState.RUNNING);
+                } else {
+                    this.setState(CharacterState.IDLE);
+                }
+            }
+
+            // Update Checkpoint if stable grounded
+            // Check if standing on solid ground (not falling)
+            if (this.vy === 0) {
+                this.safePosition = { x: this.x, y: this.y };
+            }
+
+            // Reset Jump Count
+            if (this.isGrounded && this.vy === 0) {
+                this.jumpCount = 0;
+            }
+        } else {
+            // Air state
+            if (!ATTACK_STATES.has(this.state) && this.state !== CharacterState.JUMPING) {
+                this.setState(CharacterState.JUMPING);
+            }
+        }
+
+        // Attack triggers
+        if (!ATTACK_STATES.has(this.state)) {
+            if (input.isDown('KeyJ')) {
+                // Random Jab or Weak Punch
+                this.setState(Math.random() > 0.5 ? CharacterState.JAB : CharacterState.WEAK_PUNCH);
+            } else if (input.isDown('KeyK')) {
+                // Random Kick or Tornado
+                this.setState(Math.random() > 0.5 ? CharacterState.ATTACKING : CharacterState.TORNADO_KICK);
+            } else if (input.isDown('KeyL')) {
+                this.setState(CharacterState.STRONG_PUNCH);
+            } else if (input.isDown('KeyM')) {
+                this.setState(CharacterState.SWEEP_KICK);
+            }
+        }
+    }
+
+    private handleMovement(input: InputHandler, dt: number) {
+        // Horizontal Movement
+        let speed = this.MOVE_SPEED;
+        if (input.isDown('KeyN')) {
+            speed *= 2;
+        }
+
+        if (input.isDown('KeyA')) {
+            this.vx -= speed * dt; // Acceleration scaled by time
+            this.direction = -1;
+            if (this.state !== CharacterState.JUMPING) this.setState(CharacterState.RUNNING);
+        } else if (input.isDown('KeyD')) {
+            this.vx += speed * dt; // Acceleration scaled by time
+            this.direction = 1;
+            if (this.state !== CharacterState.JUMPING) this.setState(CharacterState.RUNNING);
+        } else {
+            // Friction scaled by time
+            // FRICTION is per-frame factor (0.90)
+            const frictionFactor = Math.pow(this.FRICTION, dt / 16.67);
+            this.vx *= frictionFactor;
+
+            if (Math.abs(this.vx) < 0.01) { // Threshold reduced for small dt steps
+                this.vx = 0;
+                if (this.state !== CharacterState.JUMPING) this.setState(CharacterState.IDLE);
+            }
+        }
+
+        // Jumping
+        // Jumping
+        const isJumpKeyDown = input.isDown('Space');
+
+        if (isJumpKeyDown && this.canJump) {
+            if (this.isGrounded) {
+                this.vy = this.JUMP_FORCE;
+                this.setState(CharacterState.JUMPING);
+                this.isGrounded = false;
+                this.jumpCount = 1;
+                this.canJump = false; // Require release
+            } else if (this.jumpCount < this.MAX_JUMPS) {
+                // Double Jump
+                this.vy = this.JUMP_FORCE; // Full force or reduced? Full force for now.
+                this.setState(CharacterState.JUMPING);
+                this.jumpCount++;
+                this.canJump = false; // Require release
+            }
+        }
+
+        if (!isJumpKeyDown) {
+            this.canJump = true;
+        }
+
+        // Gravity
+        this.vy += this.GRAVITY * dt;
+    }
+
+    public setState(newState: CharacterState) {
+        if (this.state === newState) return;
+        this.state = newState;
+        this.animationTimer = 0;
+    }
+
+    public checkVoid(bottomLimit: number) {
+        if (this.y > bottomLimit) {
+            this.hp -= 20; // Penalty
+            this.x = 100; // Reset to Start
+            this.y = 100; // Reset to Start
+            this.vx = 0;
+            this.vy = 0;
+            return true; // Respawned
+        }
+        return false;
+    }
+
+    public getHurtbox(): Rectangle {
+        // x,y is Bottom-Center (Feet)
+        const halfWidth = this.width / 2;
+        // Reducing width further (more padding)
+        const padding = 24;
+        return {
+            x: this.x - halfWidth + padding,
+            y: this.y - this.height,
+            width: this.width - (padding * 2),
+            height: this.height
+        };
+    }
+
+    public getHitbox(): Rectangle | null {
+        if (!ATTACK_STATES.has(this.state)) return null;
+
+        // Only active during middle frames (approx 83ms to 333ms)
+        if (this.animationTimer < 83 || this.animationTimer > 333) return null;
+
+        const range = 2;
+        const hitboxHeight = 60;
+
+        // Direction 1 (Right): x is Center. Hitbox should start at Center + Offset
+        // Direction -1 (Left): x is Center. Hitbox should start at Center - Range - Offset
+        return {
+            x: this.direction === 1 ? this.x + 10 : this.x - range - 10,
+            y: this.y - hitboxHeight, // Drawn from top-left, so subtract height to "grow up" from feet
+            width: range,
+            height: hitboxHeight
+        };
+    }
+}
+
+```
+
+---
+### File: ./src/game/TileMap.ts
+```ts
+interface TileData {
+    tileId: number;
+    flipX: boolean;
+}
+
+import { Physics } from './Physics';
+
+interface MapLayer {
+    id: string;
+    name: string;
+    visible: boolean;
+    opacity: number;
+    data: Record<string, TileData>; // Key is "x,y"
+}
+
+export class TileMap {
+    private layers: MapLayer[] = [];
+    private tileset: HTMLImageElement | null = null;
+    private tileSize: number = 32; // Default, can be configured
+
+    constructor(tileSize: number = 32) {
+        this.tileSize = tileSize;
+    }
+
+    async load(jsonPath: string, imagePath: string): Promise<void> {
+        // 1. Load JSON
+        try {
+            const response = await fetch(jsonPath);
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                this.layers = data;
+            } else {
+                this.layers = data.layers;
+            }
+        } catch (e) {
+            console.error("Failed to load map JSON:", e);
+        }
+
+        // 2. Load Spritesheet
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.src = imagePath;
+            img.onload = () => {
+                this.tileset = img;
+                resolve();
+            };
+            img.onerror = (e) => {
+                console.error("Failed to load tileset image:", e);
+                reject(e);
+            };
+        });
+    }
+
+    draw(ctx: CanvasRenderingContext2D, cameraX: number, canvasWidth: number, canvasHeight: number) {
+        if (!this.tileset) return;
+
+        // Calculate visible range
+        const startCol = Math.floor(cameraX / this.tileSize);
+        const endCol = startCol + Math.ceil(canvasWidth / this.tileSize) + 1;
+        const endRow = Math.ceil(canvasHeight / this.tileSize) + 1;
+
+        this.layers.forEach(layer => {
+            if (!layer.visible) return;
+
+            // Skip collision layer for meaningful rendering (unless debug)
+            // But usually we don't draw collision layer in final game, 
+            // strictly speaking the user might want to see it or not. 
+            // For now, let's draw everything that is visible in JSON.
+
+            // Iterate only over visible columns would be efficient if data was 2D array.
+            // Since it's a sparse object "x,y", we iterate the object or optimize.
+            // For this size (platformer level), iterating all keys might be slow every frame.
+            // BETTER: Since keys are "x,y", we just loop x from startCol to endCol and y from 0 to max.
+
+            for (let x = startCol; x <= endCol; x++) {
+                // Optimization: Assumption that map isn't infinitely tall. 
+                // We scanning, say 0 to 20 (screen height in tiles).
+                // Let's assume max height is ~30 tiles (960px).
+                for (let y = 0; y < endRow; y++) {
+                    const key = `${x},${y}`;
+                    const tile = layer.data[key];
+                    if (tile) {
+                        this.drawTile(ctx, tile.tileId, x * this.tileSize, y * this.tileSize, tile.flipX, layer.opacity);
+                    }
+                }
+            }
+        });
+    }
+
+    private drawTile(ctx: CanvasRenderingContext2D, tileId: number, destX: number, destY: number, flipX: boolean, opacity: number) {
+        if (!this.tileset) return;
+
+        // Assume tileset is a grid. We need to know tileset width in tiles.
+        // Let's assume standard layout or strict grid.
+        // We usually calculate sourceX/Y from tileId.
+        // Standard "Tiled" or similar export: 
+        // tileId 0 might be empty or first tile.
+        // We need tileset width.
+        const tilesetWidthTiles = Math.floor(this.tileset.width / this.tileSize);
+
+        const srcX = (tileId % tilesetWidthTiles) * this.tileSize;
+        const srcY = Math.floor(tileId / tilesetWidthTiles) * this.tileSize;
+
+        ctx.globalAlpha = opacity;
+
+        if (flipX) {
+            ctx.save();
+            ctx.translate(destX + this.tileSize, destY);
+            ctx.scale(-1, 1);
+            ctx.drawImage(this.tileset, srcX, srcY, this.tileSize, this.tileSize, 0, 0, this.tileSize, this.tileSize);
+            ctx.restore();
+        } else {
+            ctx.drawImage(this.tileset, srcX, srcY, this.tileSize, this.tileSize, destX, destY, this.tileSize, this.tileSize);
+        }
+
+        ctx.globalAlpha = 1.0;
+    }
+
+    // Returns collision boxes around the given rect
+    getCollisions(rect: { x: number, y: number, width: number, height: number }): { x: number, y: number, width: number, height: number }[] {
+        const collisions: { x: number, y: number, width: number, height: number }[] = [];
+
+        // Identify range of tiles to check
+        const startX = Math.floor(rect.x / this.tileSize);
+        const endX = Math.floor((rect.x + rect.width) / this.tileSize);
+        const startY = Math.floor(rect.y / this.tileSize);
+        const endY = Math.floor((rect.y + rect.height) / this.tileSize);
+
+        // Check specific layers. Usually "Collision" or "Terrain".
+        // Check specific layers. Usually "Collision" or "Terrain".
+        const collisionLayers = this.layers.filter(l => l.name === 'Collision' || l.name === 'Terrain');
+
+        collisionLayers.forEach(layer => {
+            for (let x = startX; x <= endX; x++) {
+                for (let y = startY; y <= endY; y++) {
+                    const key = `${x},${y}`;
+                    if (layer.data[key]) {
+                        const tileRect = {
+                            x: x * this.tileSize,
+                            y: y * this.tileSize,
+                            width: this.tileSize,
+                            height: this.tileSize
+                        };
+
+                        // Strict check: Only return if actually intersecting
+                        if (Physics.checkCollision(rect, tileRect)) {
+                            collisions.push(tileRect);
+                        }
+                    }
+                }
+            }
+        });
+
+        return collisions;
+    }
+}
+
+```
+
+---
+### File: ./src/components/CharacterSelect.tsx
+```tsx
+import React, { useState, useEffect } from 'react';
+import { CHARACTERS } from '../game/Characters';
+
+interface CharacterSelectProps {
+    onSelect: (characterId: string) => void;
+}
+
+export const CharacterSelect: React.FC<CharacterSelectProps> = ({ onSelect }) => {
+    const chars = Object.values(CHARACTERS);
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const handleNext = () => {
+        setCurrentIndex((prev) => (prev + 1) % chars.length);
+    };
+
+    const handlePrev = () => {
+        setCurrentIndex((prev) => (prev - 1 + chars.length) % chars.length);
+    };
+
+    const handleSelect = () => {
+        onSelect(chars[currentIndex].id);
+    };
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+                handleNext();
+            } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+                handlePrev();
+            } else if (e.key === 'Enter' || e.key === ' ') {
+                handleSelect();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [currentIndex]);
+
+    const currentChar = chars[currentIndex];
+    const frameCount = currentChar.selectionFrameCount || 1;
+
+    return (
+        <div className="relative w-full h-screen bg-slate-900 flex flex-col items-center justify-center overflow-hidden">
+            {/* Background elements */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black opacity-80"></div>
+
+            <h1 className="relative z-10 text-6xl font-black text-white mb-12 tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] italic uppercase">
+                Select Your Fighter
+            </h1>
+
+            <div className="relative z-10 flex items-center justify-center gap-12">
+                {/* Arrow Left */}
+                <button
+                    onClick={handlePrev}
+                    className="p-4 text-white/50 hover:text-white transition-colors hover:scale-110 transform"
+                >
+                    <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                </button>
+
+                {/* Character Card */}
+                <div className="flex flex-col items-center group cursor-pointer" onClick={handleSelect}>
+                    <div className="relative w-64 h-64 flex items-center justify-center mb-6 transition-transform transform group-hover:scale-105">
+                        {/* Glow effect */}
+                        <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
+
+                        {/* Character Sprite Display */}
+                        <div className="relative w-48 h-48 overflow-hidden image-pixelated border-4 border-transparent">
+                            {/* Inner Slider for Animation */}
+                            <div
+                                className="h-full absolute left-0 top-0 bg-contain bg-no-repeat bg-left"
+                                style={{
+                                    backgroundImage: `url(${currentChar.portrait})`,
+                                    width: `${frameCount * 100}%`, // Width matches number of frames
+                                    backgroundSize: '100% 100%', // Ensure the sheet fills the slider
+                                    animation: `sprite-slide ${frameCount * 0.15}s steps(${frameCount}) infinite`,
+                                }}
+                            ></div>
+                        </div>
+                    </div>
+
+                    <h2 className="text-4xl font-bold text-white mb-2">{currentChar.name}</h2>
+                    <p className="text-gray-400 text-lg max-w-md text-center">{currentChar.description}</p>
+
+                    <div className="mt-8 px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xl rounded-sm transition-all shadow-[0_0_20px_rgba(37,99,235,0.5)] hover:shadow-[0_0_30px_rgba(37,99,235,0.8)]">
+                        CONFIRM
+                    </div>
+                </div>
+
+                {/* Arrow Right */}
+                <button
+                    onClick={handleNext}
+                    className="p-4 text-white/50 hover:text-white transition-colors hover:scale-110 transform"
+                >
+                    <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                </button>
+            </div>
+
+            {/* Hint */}
+            <div className="absolute bottom-8 text-white/30 font-mono text-sm">
+                Use Arrow Keys to Rotate • Enter to Select
+            </div>
+
+            <style>{`
+                @keyframes sprite-slide {
+                    from { transform: translateX(0); }
+                    to { transform: translateX(-100%); }
+                }
+                .image-pixelated {
+                    image-rendering: pixelated;
+                }
+            `}</style>
+        </div>
+    );
+};
+
+```
+
+---
+### File: ./src/components/CanvasGame.tsx
+```tsx
+import { useRef, useEffect, useState, useCallback } from 'react';
+import { useGameLoop } from '../hooks/useGameLoop';
+import { InputHandler } from '../game/InputHandler';
+import { CharacterController, CharacterState } from '../game/CharacterController';
+import { SpriteRenderer } from '../game/SpriteRenderer';
+import { Enemy } from '../game/Enemy';
+import { Physics } from '../game/Physics';
+import { Collectible } from '../game/Collectible';
+import { TileMap } from '../game/TileMap';
+
+import { CHARACTERS } from '../game/Characters';
+
+// Helper to prepend base path
+const BASE = import.meta.env.BASE_URL;
+
+
+// ENEMY_ASSETS and other constants remain...
+
+const ENEMY_ASSETS = {
+    SPAMMER: {
+        IDLE: `${BASE}sprites/enemx/spammer/spammer_idle.png`,
+        RUN: `${BASE}sprites/enemx/spammer/spammer_run.png`,
+        ATTACK: `${BASE}sprites/enemx/spammer/spammer_jump.png`, // Switched to Jump for better visual
+        HIT: `${BASE}sprites/enemx/spammer/spammer_idle.png`
+    },
+    TROLL: {
+        IDLE: `${BASE}sprites/enemx/troll/troll_fight_idle.png`,
+        RUN: `${BASE}sprites/enemx/troll/troll_run.png`,
+        ATTACK: `${BASE}sprites/enemx/troll/troll_punch.png`,
+        HIT: `${BASE}sprites/enemx/troll/troll_fight_idle.png`
+    }
+};
+
+const ENEMY_FRAME_COUNTS = {
+    SPAMMER: { IDLE: 8, RUN: 8, ATTACK: 8, HIT: 8 },
+    TROLL: { IDLE: 8, RUN: 6, ATTACK: 6, HIT: 8 }
+};
+
+const COLLECTIBLE_ASSETS = {
+    HEART: `${BASE}sprites/collectibles/heart.png`
+};
+
+export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) => {
+
+    const [debugMode, setDebugMode] = useState(false);
+
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [_, setTick] = useState(0); // Force render for UI updates
+    const [gameOver, setGameOver] = useState(false);
+    const [gameWon, setGameWon] = useState(false);
+
+
+    // Game Objects Refs (Persist across renders)
+    const inputHandler = useRef<InputHandler | null>(null);
+    const character = useRef<CharacterController | null>(null);
+    const enemies = useRef<Enemy[]>([]);
+    const collectibles = useRef<Collectible[]>([]);
+    const renderer = useRef<SpriteRenderer | null>(null);
+    const tileMap = useRef<TileMap | null>(null);
+    const images = useRef<Record<string, HTMLImageElement>>({});
+
+    // Initialize Game Objects
+    useEffect(() => {
+        inputHandler.current = new InputHandler();
+
+        // Use config for initial size if available (optional support, future proofing)
+        character.current = new CharacterController({ x: 100, y: 100 }); // Spawn higher
+
+        // Initialize TileMap
+        tileMap.current = new TileMap(64);
+        tileMap.current.load(`${BASE}sprites/maps/level1/map_data_level1.json`, `${BASE}sprites/maps/map_spritesheet.png`);
+
+        // Spawn Enemies
+        enemies.current = []; // Start empty, let spawner handle it
+        collectibles.current = [];
+
+
+        renderer.current = new SpriteRenderer();
+
+
+        // Load Player Images
+        const charConfig = CHARACTERS[characterId];
+        Object.entries(charConfig.assets).forEach(([state, src]) => {
+            const img = new Image();
+            img.src = src;
+            images.current[state] = img;
+        });
+
+        // Load Enemy Images
+        Object.entries(ENEMY_ASSETS).forEach(([type, states]) => {
+            Object.entries(states).forEach(([state, src]) => {
+                const img = new Image();
+                img.src = src;
+                const key = `${type}_${state}`;
+                images.current[key] = img;
+            });
+        });
+
+        // Load Collectible Images
+        Object.entries(COLLECTIBLE_ASSETS).forEach(([type, src]) => {
+            const img = new Image();
+            img.src = src;
+            images.current[type] = img;
+        });
+
+        return () => {
+            inputHandler.current?.destroy();
+        };
+    }, []);
+
+    const update = useCallback((dt: number) => {
+        if (!inputHandler.current || !character.current || !enemies.current || !collectibles.current) return;
+        if (gameOver || gameWon) return; // Stop update on game over
+
+        character.current.update(inputHandler.current, dt, tileMap.current);
+        character.current.checkVoid(1000); // Check strictly after update
+
+        // Update Enemies
+        enemies.current.forEach(enemy => {
+            enemy.update(dt, character.current!.x, tileMap.current);
+        });
+
+        // Check Collision
+        const hitbox = character.current.getHitbox();
+
+        if (hitbox) {
+            enemies.current.forEach(enemy => {
+                if (!enemy.isHit) {
+                    const hurtbox = enemy.getHurtbox();
+                    if (Physics.checkCollision(hitbox, hurtbox)) {
+                        enemy.takeDamage(10);
+                        // setDamage(prev => prev + 10);
+                        setTick(t => t + 1); // Force update
+                        console.log("HIT Enemy!", enemy.type);
+                    }
+                }
+            });
+        }
+
+        // Check Enemy Attacks on Player & Solid Collision
+        const playerHurtbox = character.current.getHurtbox();
+        enemies.current.forEach(enemy => {
+            const enemyHurtbox = enemy.getHurtbox();
+
+            // Solid Collision (Body vs Body)
+            if (Physics.checkCollision(enemyHurtbox, playerHurtbox)) {
+                const resolution = Physics.resolveCollision(playerHurtbox, enemyHurtbox);
+                character.current!.x += resolution.x;
+                character.current!.y += resolution.y;
+            }
+
+            // Enemy Attack Damage (Active frames simulation)
+            // Spammer Attack: Timer started at 667ms. Active between 167ms and 500ms (remaining)
+            // Troll Attack: Timer started at 1000ms. Active between 333ms and 667ms (remaining)
+            let attackRange = 0;
+            if (enemy.state === 'ATTACK') {
+                if (enemy.type === 'SPAMMER' && enemy.attackTimer > 167 && enemy.attackTimer < 500) {
+                    attackRange = 40;
+                } else if (enemy.type === 'TROLL' && enemy.attackTimer > 333 && enemy.attackTimer < 667) {
+                    attackRange = 60;
+                }
+            }
+
+            if (attackRange > 0) {
+                // Create a temporary attack hitbox based on facing direction
+                // Direction 1 is Left, -1 is Right (based on Enemy.ts logic)
+                const attackHitbox = {
+                    x: enemy.direction === -1 ? enemy.x + 20 : enemy.x - 20 - attackRange,
+                    y: enemy.y - 40,
+                    width: attackRange,
+                    height: 40
+                };
+
+                if (Physics.checkCollision(attackHitbox, playerHurtbox)) {
+                    if (character.current && character.current.hitTimer === 0) {
+                        character.current.takeDamage(10);
+                        setTick(t => t + 1);
+                        console.log("Player Hit by", enemy.type);
+                    }
+                }
+            }
+        });
+
+        // Check Game Over
+        if (character.current.hp <= 0 && !gameOver) {
+            setGameOver(true);
+        }
+
+        // Check Collectible Collisions
+        // playerHurtbox already defined above
+        collectibles.current.forEach(collectible => {
+            if (!collectible.collected && Physics.checkCollision(playerHurtbox, collectible.getHitbox())) {
+                collectible.collected = true;
+                if (character.current) {
+                    character.current.hp = Math.min(character.current.maxHp, character.current.hp + 20);
+                    setTick(t => t + 1); // Force update UI
+                    console.log("Collected Heart! HP:", character.current.hp);
+                }
+            }
+        });
+
+        // Remove collected collectibles
+        collectibles.current = collectibles.current.filter(c => !c.collected);
+
+        // Check Win Condition
+        if (character.current.x > 7400 && !gameWon) {
+            setGameWon(true);
+        }
+
+        // Random Spawning
+        // 1% chance per frame if < 5 enemies
+        if (enemies.current.length < 5 && Math.random() < 0.01) {
+            const spawnX = character.current.x + 600 + Math.random() * 400; // 600-1000px ahead
+            const type = Math.random() > 0.7 ? 'TROLL' : 'SPAMMER';
+            enemies.current.push(new Enemy(spawnX, 100, type)); // Spawn in air / map text
+            console.log("Spawned", type, "at", spawnX);
+        }
+
+        // Remove dead enemies & Drop Collectibles
+        enemies.current = enemies.current.filter(enemy => {
+            if (enemy.hp <= 0) {
+                // Enemy Died
+                if (Math.random() < 0.5) {
+                    collectibles.current.push(new Collectible(enemy.x, enemy.y - 32, 'HEART'));
+                    console.log("Dropped Heart at", enemy.x, enemy.y - 32);
+                }
+                return false;
+            }
+            return true;
+        });
+    }, [])
+
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.code === 'Backquote') {
+                setDebugMode(prev => !prev);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
+    const draw = useCallback((dt: number) => {
+        const canvas = canvasRef.current;
+        if (!canvas || !character.current || !renderer.current || !enemies.current) {
+            return;
+        }
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // Clear Canvas (Absolute)
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // --- Camera Logic ---
+        const cameraX = Math.max(0, character.current.x - 300);
+
+        ctx.save();
+        ctx.translate(-cameraX, 0);
+
+        // Draw Map
+        if (tileMap.current) {
+            tileMap.current.draw(ctx, cameraX, canvas.width, canvas.height);
+        }
+
+        // Draw Character
+        const currentState = character.current.state;
+        const currentImage = images.current[currentState] || null;
+        const charConfig = CHARACTERS[characterId];
+        const offsetY = charConfig.hitboxConfig?.offsetY || 0;
+
+        renderer.current.draw(
+            ctx,
+            currentImage,
+            character.current.x,
+            character.current.y + offsetY, // Apply visual offset
+            character.current.width,
+            character.current.height,
+            character.current.direction,
+            charConfig.frameCounts[currentState as CharacterState] || 1,
+            dt
+        );
+
+        // Draw Enemies
+        enemies.current.forEach(enemy => {
+            const enemyType = enemy.type;
+            const enemyState = enemy.state;
+            const imgKey = `${enemyType}_${enemyState}`;
+            const img = images.current[imgKey];
+
+            if (img) {
+                enemy.renderer.draw(
+                    ctx,
+                    img,
+                    enemy.x,
+                    enemy.y,
+                    enemy.width,
+                    enemy.height,
+                    enemy.direction,
+                    ENEMY_FRAME_COUNTS[enemyType][enemyState] || 1,
+                    dt
+                );
+            } else {
+                ctx.fillStyle = enemy.isHit ? 'white' : (enemyType === 'TROLL' ? 'green' : 'orange');
+                ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+            }
+
+            // Draw Health Bar
+            const barWidth = 40;
+            const barHeight = 4;
+            const healthPct = Math.max(0, enemy.hp / enemy.maxHp);
+            const barX = enemy.x - barWidth / 2;
+            const barY = enemy.y - enemy.height - 10;
+
+            ctx.fillStyle = 'red';
+            ctx.fillRect(barX, barY, barWidth, barHeight);
+            ctx.fillStyle = '#00FF00';
+            ctx.fillRect(barX, barY, barWidth * healthPct, barHeight);
+
+            // --- DEBUG VISUALS ---
+            if (debugMode) {
+                // 1. Draw Enemy Hurtbox (Blue)
+                const eHurt = enemy.getHurtbox();
+                ctx.strokeStyle = 'blue';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(eHurt.x, eHurt.y, eHurt.width, eHurt.height);
+
+                // 2. Draw State Text
+                ctx.fillStyle = 'white';
+                ctx.font = '12px Arial';
+                ctx.fillText(enemy.state, enemy.x - 20, enemy.y - enemy.height - 20);
+
+                // 3. Draw Attack Hitbox (Yellow)
+                let attackRange = 0;
+                if (enemy.state === 'ATTACK') {
+                    if (enemy.type === 'SPAMMER' && enemy.attackTimer > 167 && enemy.attackTimer < 500) {
+                        attackRange = 10;
+                    } else if (enemy.type === 'TROLL' && enemy.attackTimer > 333 && enemy.attackTimer < 667) {
+                        attackRange = 1;
+                    }
+                }
+                if (attackRange > 0) {
+                    const attackHitbox = {
+                        x: enemy.direction === -1 ? enemy.x + 20 : enemy.x - 20 - attackRange,
+                        y: enemy.y - 40,
+                        width: attackRange,
+                        height: 40
+                    };
+                    ctx.strokeStyle = 'yellow';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(attackHitbox.x, attackHitbox.y, attackHitbox.width, attackHitbox.height);
+                }
+            }
+        });
+
+        // Draw Collectibles
+        collectibles.current.forEach(collectible => {
+            const img = images.current[collectible.type];
+            if (img) {
+                ctx.drawImage(img, collectible.x, collectible.y, collectible.width, collectible.height);
+            } else {
+                ctx.fillStyle = 'pink';
+                ctx.fillRect(collectible.x, collectible.y, collectible.width, collectible.height);
+            }
+        });
+
+        // Debug Player Hitbox
+        if (debugMode) {
+            const cHit = character.current.getHitbox();
+            if (cHit) {
+                ctx.strokeStyle = '#FF0000';
+                ctx.strokeRect(cHit.x, cHit.y, cHit.width, cHit.height);
+            }
+            // Also draw player hurtbox for clarity in debug
+            const pHurt = character.current.getHurtbox();
+            ctx.strokeStyle = 'green';
+            ctx.strokeRect(pHurt.x, pHurt.y, pHurt.width, pHurt.height);
+        }
+
+        ctx.restore();
+    }, [images, debugMode]);
+
+    useGameLoop({ onUpdate: update, onDraw: draw });
+
+    return (
+        <div className="relative w-full h-screen bg-neutral-900 flex justify-center items-center">
+            <div className="relative border-4 border-gray-700 bg-black shadow-2xl rounded-lg overflow-hidden">
+                <canvas
+                    ref={canvasRef}
+                    width={800}
+                    height={600}
+                    className="block"
+                />
+
+                {/* HUD Overlay */}
+                <div className="absolute top-4 right-4 bg-gray-900/80 p-4 rounded-lg border-2 border-blue-500 w-64">
+                    <div className="text-white font-bold mb-1">PLAYER HEALTH</div>
+                    <div className="w-full bg-gray-700 h-4 rounded-full overflow-hidden">
+                        <div
+                            className="bg-blue-500 h-full transition-all duration-100"
+                            style={{ width: `${Math.max(0, (character.current?.hp || 100) / (character.current?.maxHp || 100) * 100)}%` }}
+                        ></div>
+                    </div>
+                    <div className="text-right text-white text-sm mt-1">{character.current?.hp}/100</div>
+                </div>
+
+                {/* Controls Hint */}
+                <div className="absolute top-4 left-4 text-white/50 text-sm font-mono">
+                    <p>A/D: Move | SPACE: Jump</p>
+                    <p>J: Jab | K: Kick</p>
+                    <p>L: Strong Punch | M: Sweep</p>
+                </div>
+
+                {/* Game Over Modal */}
+                {gameOver && (
+                    <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-50">
+                        <h1 className="text-6xl font-black text-red-600 mb-4 drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]">GAME OVER</h1>
+                        <button
+                            className="px-8 py-3 bg-white text-black font-bold text-xl rounded hover:bg-gray-200 transition-colors"
+                            onClick={() => window.location.reload()}
+                        >
+                            TRY AGAIN
+                        </button>
+                    </div>
+                )}
+
+                {/* Win Modal */}
+                {gameWon && (
+                    <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-50">
+                        <h1 className="text-6xl font-black text-green-500 mb-4 drop-shadow-[0_0_10px_rgba(0,255,0,0.8)]">YOU WON!</h1>
+                        <p className="text-white text-xl mb-8">You survived the Strike!</p>
+                        <button
+                            className="px-8 py-3 bg-white text-black font-bold text-xl rounded hover:bg-gray-200 transition-colors"
+                            onClick={() => window.location.reload()}
+                        >
+                            PLAY AGAIN
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+```
+
+---
+### File: ./src/hooks/useGameLoop.ts
+```ts
+import { useRef, useEffect, useCallback } from 'react';
+
+type GameLoopCallback = (deltaTime: number) => void;
+
+interface UseGameLoopProps {
+    onUpdate: GameLoopCallback;
+    onDraw: GameLoopCallback;
+}
+
+export const useGameLoop = ({ onUpdate, onDraw }: UseGameLoopProps) => {
+    const requestRef = useRef<number | undefined>(undefined);
+    const previousTimeRef = useRef<number | undefined>(undefined);
+    const isRunning = useRef(true);
+
+    const animate = useCallback((time: number) => {
+        if (!isRunning.current) return;
+
+        if (previousTimeRef.current !== undefined) {
+            const deltaTime = time - previousTimeRef.current;
+
+            // Cap deltaTime to prevent huge jumps if tab was inactive (e.g. max 100ms)
+            const cappedDelta = Math.min(deltaTime, 100);
+
+            onUpdate(cappedDelta);
+            onDraw(cappedDelta);
+        }
+        previousTimeRef.current = time;
+        requestRef.current = requestAnimationFrame(animate);
+    }, [onUpdate, onDraw]);
+
+    useEffect(() => {
+        isRunning.current = true;
+        requestRef.current = requestAnimationFrame(animate);
+        return () => {
+            if (requestRef.current) cancelAnimationFrame(requestRef.current);
+            isRunning.current = false;
+        };
+    }, [animate]);
+
+    return { isRunning };
+};
+
+```
+
