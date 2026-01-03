@@ -58,12 +58,14 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
 
     // Load assets
     useEffect(() => {
-        // Load Player Images
-        const charConfig = CHARACTERS[characterId];
-        Object.entries(charConfig.assets).forEach(([state, src]) => {
-            const img = new Image();
-            img.src = src;
-            images.current[state] = img;
+        // Load ALL Player Character Images (for multiplayer)
+        Object.entries(CHARACTERS).forEach(([charType, charConfig]) => {
+            Object.entries(charConfig.assets).forEach(([state, src]) => {
+                const img = new Image();
+                img.src = src;
+                // Key format: "FRESH_IDLE", "HOKA_RUNNING", etc.
+                images.current[`${charType}_${state}`] = img;
+            });
         });
 
         // Load Enemy Images
@@ -82,7 +84,7 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
             img.src = src;
             images.current[type] = img;
         });
-    }, [characterId]);
+    }, []);
 
     // Initialize Game Engine & Socket
     useEffect(() => {
@@ -106,7 +108,7 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
                 socket.disconnect();
                 // Add local player for offline mode
                 if (gameEngine.current) {
-                    gameEngine.current.addPlayer('local');
+                    gameEngine.current.addPlayer('local', characterId);
                     setMyId('local');
                 }
             }
@@ -116,6 +118,8 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
             clearTimeout(connectionTimeout);
             console.log("Connected to Game Server - ONLINE mode");
             setIsOnline(true);
+            // Send character type to server
+            socket.emit('joinGame', { characterType: characterId });
         });
 
         socket.on('welcome', (data: { id: string }) => {
@@ -142,7 +146,7 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
             socket.disconnect();
             // Add local player for offline mode
             if (gameEngine.current) {
-                gameEngine.current.addPlayer('local');
+                gameEngine.current.addPlayer('local', characterId);
                 setMyId('local');
             }
         });
@@ -233,8 +237,9 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
         // Draw Players
         engine.players.forEach((character, id) => {
             const currentState = character.state;
-            const currentImage = images.current[currentState] || null;
-            const charConfig = CHARACTERS[characterId]; // Simplify: assume all use same skin for now
+            const charType = character.characterType || 'FRESH';
+            const currentImage = images.current[`${charType}_${currentState}`] || null;
+            const charConfig = CHARACTERS[charType] || CHARACTERS['FRESH'];
             const offsetY = charConfig.hitboxConfig?.offsetY || 0;
 
             // Draw Character

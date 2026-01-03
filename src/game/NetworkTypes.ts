@@ -11,6 +11,7 @@ export interface EnemyState {
 }
 
 export interface CharacterNetworkState {
+    characterType: string; // 'FRESH', 'HOKA', etc.
     x: number;
     y: number;
     vx: number;

@@ -45,8 +45,9 @@ export class GameEngine {
         this.enemies.push(new Enemy(1600, 100, 'SPAMMER'));
     }
 
-    public addPlayer(id: string, type: string = 'FRESH') {
+    public addPlayer(id: string, characterType: string = 'FRESH') {
         const player = new CharacterController({ x: 250, y: 300 });
+        player.characterType = characterType;
         this.players.set(id, player);
     }
 
@@ -177,6 +178,7 @@ export class GameEngine {
         const playersSnapshot: Record<string, CharacterNetworkState> = {};
         this.players.forEach((p, id) => {
             playersSnapshot[id] = {
+                characterType: p.characterType,
                 x: p.x,
                 y: p.y,
                 vx: p.vx,
@@ -233,6 +235,7 @@ export class GameEngine {
                 this.players.set(id, player);
             }
 
+            player.characterType = pState.characterType;
             player.x = pState.x;
             player.y = pState.y;
             player.vx = pState.vx;

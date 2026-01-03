@@ -59,15 +59,20 @@ const inputs: Record<string, any> = {};
 
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
-    game.addPlayer(socket.id);
-    inputs[socket.id] = {
-        left: false, right: false, up: false, down: false,
-        jump: false, run: false,
-        jab: false, kick: false, heavyPunch: false, sweep: false
-    };
 
-    // Send Welcome event (optional, or just use socket.id on client)
-    socket.emit('welcome', { id: socket.id });
+    // Wait for joinGame event with character type before adding player
+    socket.on('joinGame', (data: { characterType?: string }) => {
+        const characterType = data?.characterType || 'FRESH';
+        console.log(`Player ${socket.id} joining as ${characterType}`);
+        game.addPlayer(socket.id, characterType);
+        inputs[socket.id] = {
+            left: false, right: false, up: false, down: false,
+            jump: false, run: false,
+            jab: false, kick: false, heavyPunch: false, sweep: false
+        };
+        // Send Welcome event with player ID
+        socket.emit('welcome', { id: socket.id });
+    });
 
     socket.on('input', (input: any) => {
         inputs[socket.id] = input;

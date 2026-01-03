@@ -31,6 +31,7 @@ interface CharacterProps {
 }
 
 export class CharacterController {
+    public characterType: string = 'FRESH'; // Character skin type
     public x: number;
     public y: number;
     public vx: number = 0;
