@@ -33,7 +33,7 @@ export interface CollectibleState {
 }
 
 export interface GameState {
-    character: CharacterNetworkState;
+    players: Record<string, CharacterNetworkState>;
     enemies: EnemyState[];
     collectibles: CollectibleState[];
     gameOver: boolean;

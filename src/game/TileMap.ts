@@ -50,7 +50,6 @@ export class TileMap {
         if (typeof window !== 'undefined' && imagePath) {
             return new Promise((resolve, reject) => {
                 const img = new Image();
-                img.src = imagePath;
                 img.onload = () => {
                     this.tileset = img;
                     resolve();
@@ -59,38 +58,28 @@ export class TileMap {
                     console.error("Failed to load tileset image:", e);
                     reject(e);
                 };
+                // Set src AFTER handlers to avoid race condition
+                img.src = imagePath;
             });
         } else {
             return Promise.resolve();
         }
     }
 
-    draw(ctx: CanvasRenderingContext2D, cameraX: number, canvasWidth: number, canvasHeight: number) {
-        if (!this.tileset) return;
+    draw(ctx: CanvasRenderingContext2D, cameraX: number, cameraY: number, canvasWidth: number, canvasHeight: number) {
+        // if (!this.tileset) return; // Allow fallback drawing
 
         // Calculate visible range
         const startCol = Math.floor(cameraX / this.tileSize);
         const endCol = startCol + Math.ceil(canvasWidth / this.tileSize) + 1;
-        const endRow = Math.ceil(canvasHeight / this.tileSize) + 1;
+        const startRow = Math.floor(cameraY / this.tileSize);
+        const endRow = startRow + Math.ceil(canvasHeight / this.tileSize) + 1;
 
         this.layers.forEach(layer => {
             if (!layer.visible) return;
 
-            // Skip collision layer for meaningful rendering (unless debug)
-            // But usually we don't draw collision layer in final game, 
-            // strictly speaking the user might want to see it or not. 
-            // For now, let's draw everything that is visible in JSON.
-
-            // Iterate only over visible columns would be efficient if data was 2D array.
-            // Since it's a sparse object "x,y", we iterate the object or optimize.
-            // For this size (platformer level), iterating all keys might be slow every frame.
-            // BETTER: Since keys are "x,y", we just loop x from startCol to endCol and y from 0 to max.
-
             for (let x = startCol; x <= endCol; x++) {
-                // Optimization: Assumption that map isn't infinitely tall. 
-                // We scanning, say 0 to 20 (screen height in tiles).
-                // Let's assume max height is ~30 tiles (960px).
-                for (let y = 0; y < endRow; y++) {
+                for (let y = startRow; y <= endRow; y++) {
                     const key = `${x},${y}`;
                     const tile = layer.data[key];
                     if (tile) {
@@ -102,7 +91,17 @@ export class TileMap {
     }
 
     private drawTile(ctx: CanvasRenderingContext2D, tileId: number, destX: number, destY: number, flipX: boolean, opacity: number) {
-        if (!this.tileset) return;
+        if (!this.tileset) {
+            // Fallback Rendering
+            ctx.globalAlpha = opacity;
+            ctx.fillStyle = (tileId % 2 === 0) ? '#444' : '#666';
+            ctx.strokeStyle = '#0F0';
+            ctx.lineWidth = 1;
+            ctx.fillRect(destX, destY, this.tileSize, this.tileSize);
+            ctx.strokeRect(destX, destY, this.tileSize, this.tileSize);
+            ctx.globalAlpha = 1.0;
+            return;
+        }
 
         // Assume tileset is a grid. We need to know tileset width in tiles.
         // Let's assume standard layout or strict grid.

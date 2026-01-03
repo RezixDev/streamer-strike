@@ -24,7 +24,7 @@ const io = new Server(httpServer, {
 const PORT = 3005;
 
 // Load Map Data (Mocking fetching on server side)
-const mapPath = path.join(__dirname, '../public/sprites/maps/level1/map_data_level1.json');
+const mapPath = path.join(__dirname, '../public/sprites/maps/arena/arena.json');
 let mapData: any = null;
 
 try {
@@ -36,18 +36,18 @@ try {
 }
 
 // Initialize Game Engine
-const game = new GameEngine('FRESH', mapData);
+const game = new GameEngine(mapData);
 
 // Game Loop
 const TICK_RATE = 60;
 const TICK_MS = 1000 / TICK_RATE;
 
 setInterval(() => {
-    game.update(TICK_MS, currentInput);
+    game.update(TICK_MS, inputs);
 
     // Occasional Log to prove it's running
     if (Math.random() < 0.01) { // ~Every 100 ticks
-        console.log(`[Server] Tick. Player Pos: (${game.character.x.toFixed(2)}, ${game.character.y.toFixed(2)})`);
+        console.log(`[Server] Tick. Players: ${game.players.size}`);
     }
     // Emit Game State
     io.emit('gameState', game.getSnapshot());
@@ -55,31 +55,31 @@ setInterval(() => {
 }, TICK_MS);
 
 
+const inputs: Record<string, any> = {};
+
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
+    game.addPlayer(socket.id);
+    inputs[socket.id] = {
+        left: false, right: false, up: false, down: false,
+        jump: false, run: false,
+        jab: false, kick: false, heavyPunch: false, sweep: false
+    };
+
+    // Send Welcome event (optional, or just use socket.id on client)
+    socket.emit('welcome', { id: socket.id });
 
     socket.on('input', (input: any) => {
-        // Apply input immediately for next tick
-        // Naive: Overwrite last input
-        // game.update needs to process this.
-        // For Phase 3, we just pass the input to the game engine somehow or store it.
-        // Current GameEngine.update takes "input" as arg.
-        // Real logic: We need to store input for the specific player (if defined)
-        // or just apply it globally if single player test.
-        // Let's assume global input buffer for single player testing over network.
-        currentInput = input;
+        inputs[socket.id] = input;
     });
 
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
+        game.removePlayer(socket.id);
+        delete inputs[socket.id];
     });
 });
 
-let currentInput: any = {
-    left: false, right: false, up: false, down: false,
-    jump: false, run: false,
-    jab: false, kick: false, heavyPunch: false, sweep: false
-};
 
 
 httpServer.listen(PORT, () => {

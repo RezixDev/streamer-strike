@@ -8,7 +8,7 @@ import { CHARACTERS } from './Characters';
 import type { GameState, CharacterNetworkState, EnemyState, CollectibleState } from './NetworkTypes';
 
 export class GameEngine {
-    public character: CharacterController;
+    public players: Map<string, CharacterController> = new Map();
     public enemies: Enemy[] = [];
     public collectibles: Collectible[] = [];
     public tileMap: TileMap;
@@ -21,122 +21,144 @@ export class GameEngine {
 
     private readonly BASE = (import.meta as any).env?.BASE_URL || '/';
 
-    constructor(characterId: string = 'FRESH', mapData?: any) {
-        // Initialize Character
-        this.character = new CharacterController({ x: 100, y: 100 });
-
+    constructor(initialMapData?: any) {
         // Initialize TileMap
         this.tileMap = new TileMap(64);
 
-        if (mapData) {
+        if (initialMapData) {
             // Server-side or Pre-loaded usage
-            this.tileMap.load(mapData);
+            this.tileMap.load(initialMapData);
         } else if (typeof window !== 'undefined') {
             // Client-side auto-load
-            this.tileMap.load(`${this.BASE}sprites/maps/level1/map_data_level1.json`, `${this.BASE}sprites/maps/map_spritesheet.png`);
+            this.tileMap.load(`${this.BASE}sprites/maps/arena/arena.json`, `${this.BASE}sprites/maps/map_spritesheet.png`);
         }
-
 
         // Spawn Enemies
-        this.enemies = []; // Start empty
-        this.collectibles = [];
+        this.initLevel();
     }
 
-    public update(dt: number, input: InputState) {
+    private initLevel() {
+        this.enemies = [];
+        this.collectibles = [];
+        this.enemies.push(new Enemy(800, 100, 'SPAMMER'));
+        this.enemies.push(new Enemy(1200, 100, 'TROLL'));
+        this.enemies.push(new Enemy(1600, 100, 'SPAMMER'));
+    }
+
+    public addPlayer(id: string, type: string = 'FRESH') {
+        const player = new CharacterController({ x: 250, y: 300 });
+        this.players.set(id, player);
+    }
+
+    public removePlayer(id: string) {
+        this.players.delete(id);
+    }
+
+    public update(dt: number, inputs: Record<string, InputState>) {
         if (this.gameOver || this.gameWon) return;
 
-        // Update Character (Refactored method signature needed!)
-        // Casting input for now until CharacterController is refactored
-        this.character.update(input, dt, this.tileMap);
+        // Update All Players
+        this.players.forEach((player, id) => {
+            const input = inputs[id];
+            if (input) {
+                player.update(input, dt, this.tileMap);
+                player.checkVoid(2000); // Void check
 
-        this.character.checkVoid(1000);
+                // Collectibles
+                this.collectibles = this.collectibles.filter(c => {
+                    if (!c.collected && Physics.checkCollision(player.getHitbox(), c)) {
+                        c.collected = true;
+                        if (this.onScore) this.onScore(100);
+                        // Heal
+                        if (c.type === 'HEART') {
+                            player.hp = Math.min(player.maxHp, player.hp + 20);
+                        }
+                        return false;
+                    }
+                    return true;
+                });
+            }
+        });
 
         // Update Enemies
+        // Target usually the closest player
         this.enemies.forEach(enemy => {
-            enemy.update(dt, this.character.x, this.tileMap);
-        });
+            // Find closest player
+            let closestX = 0;
+            let minDist = Infinity;
 
-        // Check Collision: Player Attack vs Enemy
-        const hitbox = this.character.getHitbox();
-        if (hitbox) {
-            this.enemies.forEach(enemy => {
-                if (!enemy.isHit) {
-                    const hurtbox = enemy.getHurtbox();
-                    if (Physics.checkCollision(hitbox, hurtbox)) {
-                        enemy.takeDamage(10);
-                        console.log("HIT Enemy!", enemy.type);
+            if (this.players.size > 0) {
+                for (const [_, p] of this.players) {
+                    const dist = Math.abs(p.x - enemy.x);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        closestX = p.x;
                     }
                 }
-            });
-        }
-
-        // Check Collision: Enemy Attack vs Player & Body Collision
-        const playerHurtbox = this.character.getHurtbox();
-        this.enemies.forEach(enemy => {
-            const enemyHurtbox = enemy.getHurtbox();
-
-            // Solid Collision (Body vs Body)
-            if (Physics.checkCollision(enemyHurtbox, playerHurtbox)) {
-                const resolution = Physics.resolveCollision(playerHurtbox, enemyHurtbox);
-                this.character.x += resolution.x;
-                this.character.y += resolution.y;
+            } else {
+                closestX = enemy.x; // Stay still
             }
 
-            // Enemy Attack Damage
-            let attackRange = 0;
-            if (enemy.state === 'ATTACK') {
-                if (enemy.type === 'SPAMMER' && enemy.attackTimer > 167 && enemy.attackTimer < 500) {
-                    attackRange = 40;
-                } else if (enemy.type === 'TROLL' && enemy.attackTimer > 333 && enemy.attackTimer < 667) {
-                    attackRange = 60;
-                }
-            }
+            enemy.update(dt, closestX, this.tileMap);
 
-            if (attackRange > 0) {
-                const attackHitbox = {
-                    x: enemy.direction === -1 ? enemy.x + 20 : enemy.x - 20 - attackRange,
-                    y: enemy.y - 40,
-                    width: attackRange,
-                    height: 40
-                };
+            // Check Collisions with ALL players
+            if (!enemy.isHit) {
+                this.players.forEach(player => {
+                    // Enemy Attack
+                    if (enemy.state === 'ATTACK') {
+                        let attackRange = 0;
+                        if (enemy.type === 'SPAMMER' && enemy.attackTimer > 167 && enemy.attackTimer < 500) {
+                            attackRange = 40;
+                        } else if (enemy.type === 'TROLL' && enemy.attackTimer > 333 && enemy.attackTimer < 667) {
+                            attackRange = 60;
+                        }
 
-                if (Physics.checkCollision(attackHitbox, playerHurtbox)) {
-                    if (this.character.hitTimer === 0) {
-                        this.character.takeDamage(10);
-                        if (this.onDamage) this.onDamage(10);
-                        console.log("Player Hit by", enemy.type);
+                        if (attackRange > 0) {
+                            const attackHitbox = {
+                                x: enemy.direction === -1 ? enemy.x + 20 : enemy.x - 20 - attackRange,
+                                y: enemy.y - 40,
+                                width: attackRange,
+                                height: 40
+                            };
+
+                            if (Physics.checkCollision(attackHitbox, player.getHurtbox())) {
+                                if (player.hitTimer === 0) {
+                                    player.takeDamage(10);
+                                    if (this.onDamage) this.onDamage(10);
+                                    console.log("Player Hit by", enemy.type);
+                                }
+                            }
+                        }
                     }
-                }
+
+                    // Player Hit Enemy
+                    if (player.state === 'JAB' || player.state === 'KICK' || player.state === 'HEAVY_PUNCH') {
+                        if (Physics.checkCollision(player.getHitbox(), enemy.getHurtbox())) {
+                            enemy.takeDamage(10);
+                            if (this.onScore) this.onScore(10);
+                        }
+                    }
+
+                    // Body Collision
+                    const playerHurtbox = player.getHurtbox();
+                    const enemyHurtbox = enemy.getHurtbox();
+                    if (Physics.checkCollision(enemyHurtbox, playerHurtbox)) {
+                        const resolution = Physics.resolveCollision(playerHurtbox, enemyHurtbox);
+                        player.x += resolution.x;
+                        player.y += resolution.y;
+                    }
+                });
             }
         });
 
-        // Check Game Over
-        if (this.character.hp <= 0 && !this.gameOver) {
+        // Check Game Over (if all players are dead)
+        if (this.players.size > 0 && Array.from(this.players.values()).every(p => p.hp <= 0) && !this.gameOver) {
             this.gameOver = true;
         }
 
-        // Check Collectible Collisions
-        this.collectibles.forEach(collectible => {
-            if (!collectible.collected && Physics.checkCollision(playerHurtbox, collectible.getHitbox())) {
-                collectible.collected = true;
-                this.character.hp = Math.min(this.character.maxHp, this.character.hp + 20);
-                console.log("Collected Heart! HP:", this.character.hp);
-            }
-        });
-
-        // Remove collected collectibles
-        this.collectibles = this.collectibles.filter(c => !c.collected);
-
-        // Check Win Condition
-        if (this.character.x > 7400 && !this.gameWon) {
+        // Win Condition
+        if (this.players.size > 0 && Array.from(this.players.values()).some(p => p.x > 7400) && !this.gameWon) {
             this.gameWon = true;
-        }
-
-        // Random Spawning logic
-        if (this.enemies.length < 5 && Math.random() < 0.01) {
-            const spawnX = this.character.x + 600 + Math.random() * 400;
-            const type = Math.random() > 0.7 ? 'TROLL' : 'SPAMMER';
-            this.enemies.push(new Enemy(spawnX, 100, type));
         }
 
         // Remove dead enemies & Drop Collectibles
@@ -152,19 +174,24 @@ export class GameEngine {
     }
 
     public getSnapshot(): GameState {
+        const playersSnapshot: Record<string, CharacterNetworkState> = {};
+        this.players.forEach((p, id) => {
+            playersSnapshot[id] = {
+                x: p.x,
+                y: p.y,
+                vx: p.vx,
+                vy: p.vy,
+                hp: p.hp,
+                maxHp: p.maxHp,
+                state: p.state,
+                direction: p.direction,
+                isGrounded: p.isGrounded,
+                isHit: p.isHit
+            };
+        });
+
         return {
-            character: {
-                x: this.character.x,
-                y: this.character.y,
-                vx: this.character.vx,
-                vy: this.character.vy,
-                hp: this.character.hp,
-                maxHp: this.character.maxHp,
-                state: this.character.state,
-                direction: this.character.direction,
-                isGrounded: this.character.isGrounded,
-                isHit: this.character.isHit
-            },
+            players: playersSnapshot,
             enemies: this.enemies.map(e => ({
                 id: e.id,
                 type: e.type,
@@ -184,42 +211,48 @@ export class GameEngine {
                 height: c.height,
                 collected: c.collected
             })),
-            gameOver: this.gameOver,
+            gameOver: this.gameOver, // This might need to be player-specific? For now global game over?
             gameWon: this.gameWon
         };
     }
 
     public applySnapshot(state: GameState) {
-        // Character
-        this.character.x = state.character.x;
-        this.character.y = state.character.y;
-        this.character.vx = state.character.vx;
-        this.character.vy = state.character.vy;
-        this.character.hp = state.character.hp;
-        this.character.state = state.character.state as any; // Cast back to enum/union
-        this.character.direction = state.character.direction as 1 | -1;
-        this.character.isGrounded = state.character.isGrounded;
-        this.character.isHit = state.character.isHit;
+        // Sync Players
+        // 1. Remove players present locally but not in snapshot
+        for (const id of this.players.keys()) {
+            if (!state.players[id]) {
+                this.players.delete(id);
+            }
+        }
+
+        // 2. Add or Update players
+        Object.entries(state.players).forEach(([id, pState]) => {
+            let player = this.players.get(id);
+            if (!player) {
+                player = new CharacterController({ x: pState.x, y: pState.y });
+                this.players.set(id, player);
+            }
+
+            player.x = pState.x;
+            player.y = pState.y;
+            player.vx = pState.vx;
+            player.vy = pState.vy;
+            player.hp = pState.hp;
+            player.state = pState.state as any;
+            player.direction = pState.direction as 1 | -1;
+            player.isGrounded = pState.isGrounded;
+            player.isHit = pState.isHit;
+        });
 
         // Enemies
-        // Simple sync: Rebuild array or update existing?
-        // For Phase 3, full rebuild might be easier but less efficient.
-        // Let's try to update existing by ID if possible to preserve renderer state?
-        // Actually renderer is mostly stateless except for animation timer which is reset on state change.
-        // But if we create NEW Enemy instances, we lose the renderer state unless we copy it.
-        // BUT: Clientside GameEngine doesn't really run update() logic for enemies, just renders.
-
-        // Better approach for visualization:
-        // Sync enemies list.
+        // Sync enemies list logic (Same as before)
         const newEnemies: Enemy[] = [];
         state.enemies.forEach(eState => {
             let enemy = this.enemies.find(e => e.id === eState.id);
             if (!enemy) {
-                // New Enemy
                 enemy = new Enemy(eState.x, eState.y, eState.type as any);
                 enemy.id = eState.id;
             }
-            // Update
             enemy.x = eState.x;
             enemy.y = eState.y;
             enemy.hp = eState.hp;
@@ -231,7 +264,6 @@ export class GameEngine {
         this.enemies = newEnemies;
 
         // Collectibles
-        // Naive rebuild for now
         this.collectibles = state.collectibles.map(c => {
             const col = new Collectible(c.x, c.y, c.type as any);
             col.collected = c.collected;

@@ -268,8 +268,8 @@ export class CharacterController {
     public checkVoid(bottomLimit: number) {
         if (this.y > bottomLimit) {
             this.hp -= 20; // Penalty
-            this.x = 100; // Reset to Start
-            this.y = 100; // Reset to Start
+            this.x = this.safePosition.x; // Reset to Safe Pos
+            this.y = this.safePosition.y; // Reset to Safe Pos
             this.vx = 0;
             this.vy = 0;
             return true; // Respawned

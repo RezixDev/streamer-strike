@@ -40,11 +40,13 @@ const COLLECTIBLE_ASSETS = {
 export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) => {
 
     const [debugMode, setDebugMode] = useState(false);
+    const [myId, setMyId] = useState<string | null>(null);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [_, setTick] = useState(0); // Force render for UI updates
     const [gameOver, setGameOver] = useState(false);
     const [gameWon, setGameWon] = useState(false);
+    const [isOnline, setIsOnline] = useState<boolean | null>(null); // null = detecting
 
 
     const gameEngine = useRef<GameEngine | null>(null);
@@ -85,25 +87,68 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
     // Initialize Game Engine & Socket
     useEffect(() => {
         inputHandler.current = new InputHandler();
-        gameEngine.current = new GameEngine(characterId);
+        gameEngine.current = new GameEngine();
 
         // Initialize Renderer
         renderer.current = new SpriteRenderer();
 
-        // Connect to Server
-        socketRef.current = io('http://localhost:3005');
+        // Try to Connect to Server with timeout
+        const socket = io('http://localhost:3005', {
+            timeout: 3000, // 3 second connection timeout
+            reconnectionAttempts: 1
+        });
+        socketRef.current = socket;
 
-        socketRef.current.on('connect', () => {
-            console.log("Connected to Game Server");
+        const connectionTimeout = setTimeout(() => {
+            if (!socket.connected) {
+                console.log("Server not available - Starting OFFLINE mode");
+                setIsOnline(false);
+                socket.disconnect();
+                // Add local player for offline mode
+                if (gameEngine.current) {
+                    gameEngine.current.addPlayer('local');
+                    setMyId('local');
+                }
+            }
+        }, 3000);
+
+        socket.on('connect', () => {
+            clearTimeout(connectionTimeout);
+            console.log("Connected to Game Server - ONLINE mode");
+            setIsOnline(true);
         });
 
-        socketRef.current.on('gameState', (state: any) => {
+        socket.on('welcome', (data: { id: string }) => {
+            console.log("Welcome! My ID:", data.id);
+            setMyId(data.id);
+        });
+
+        socket.on('gameState', (state: any) => {
+            // If we receive gameState from server, we're online - apply it
             if (gameEngine.current) {
                 gameEngine.current.applySnapshot(state);
             }
         });
 
+        socket.on('disconnect', () => {
+            console.log("Disconnected from server");
+            // Optionally switch to offline mode on disconnect
+        });
+
+        socket.on('connect_error', () => {
+            clearTimeout(connectionTimeout);
+            console.log("Connection error - Starting OFFLINE mode");
+            setIsOnline(false);
+            socket.disconnect();
+            // Add local player for offline mode
+            if (gameEngine.current) {
+                gameEngine.current.addPlayer('local');
+                setMyId('local');
+            }
+        });
+
         return () => {
+            clearTimeout(connectionTimeout);
             inputHandler.current?.destroy();
             socketRef.current?.disconnect();
         };
@@ -115,20 +160,22 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
         // 1. Get Input
         const inputState = inputHandler.current.getState();
 
-        // 2. Send Input to Server
-        if (socketRef.current) {
-            socketRef.current.emit('input', inputState);
+        if (isOnline) {
+            // ONLINE MODE: Send input to server, rely on server state
+            if (socketRef.current?.connected) {
+                socketRef.current.emit('input', inputState);
+            }
+        } else if (isOnline === false) {
+            // OFFLINE MODE: Run game locally
+            gameEngine.current.update(dt, { 'local': inputState });
         }
+        // else: isOnline === null means still detecting, do nothing
 
-        // 3. Local Update (DISABLED for Phase 3 Authoritative Server)
-        // gameEngine.current.update(dt, inputState);
-
-        // 4. Update React State for UI (HP, Game Over)
-        // We still need to check these flags from the engine (which is updated by snapshot)
+        // Update React State for UI (HP, Game Over)
         if (gameEngine.current.gameOver && !gameOver) setGameOver(true);
         if (gameEngine.current.gameWon && !gameWon) setGameWon(true);
 
-    }, [gameOver, gameWon]);
+    }, [gameOver, gameWon, isOnline]);
 
 
     useEffect(() => {
@@ -154,32 +201,62 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
         // Clear Canvas (Absolute)
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+        // Find My Character
+        const myCharacter = myId ? engine.players.get(myId) : null;
+
         // --- Camera Logic ---
-        const cameraX = Math.max(0, engine.character.x - 300);
+        // Follow my character, or default to 0 if not spawned yet
+        const focusX = myCharacter ? myCharacter.x : 100;
+        const focusY = myCharacter ? myCharacter.y : 100;
+
+        // Camera Viewport Size
+        const viewW = canvas.width;
+        const viewH = canvas.height;
+
+        // Center on player
+        let cameraX = focusX - viewW / 2;
+        let cameraY = focusY - viewH / 2;
+
+        // Clamp to Map Bounds (Assuming Map Size or fallback)
+        // Arena is 64x16 tiles * 64px = 4096x1024
+        // Hardcoding standard map size limits or reading from engine if available
+        // For now, simple clamp to positive, and maybe max height
+        cameraX = Math.max(0, cameraX);
+        cameraY = Math.max(0, Math.min(cameraY, 1024 - viewH)); // Clamp Y to map height
 
         ctx.save();
-        ctx.translate(-cameraX, 0);
+        ctx.translate(-cameraX, -cameraY);
 
         // Draw Map
-        engine.tileMap.draw(ctx, cameraX, canvas.width, canvas.height);
+        engine.tileMap.draw(ctx, cameraX, cameraY, canvas.width, canvas.height);
 
-        // Draw Character
-        const currentState = engine.character.state;
-        const currentImage = images.current[currentState] || null;
-        const charConfig = CHARACTERS[characterId];
-        const offsetY = charConfig.hitboxConfig?.offsetY || 0;
+        // Draw Players
+        engine.players.forEach((character, id) => {
+            const currentState = character.state;
+            const currentImage = images.current[currentState] || null;
+            const charConfig = CHARACTERS[characterId]; // Simplify: assume all use same skin for now
+            const offsetY = charConfig.hitboxConfig?.offsetY || 0;
 
-        renderer.current.draw(
-            ctx,
-            currentImage,
-            engine.character.x,
-            engine.character.y + offsetY, // Apply visual offset
-            engine.character.width,
-            engine.character.height,
-            engine.character.direction,
-            charConfig.frameCounts[currentState as CharacterState] || 1,
-            dt
-        );
+            // Draw Character
+            if (renderer.current) {
+                renderer.current.draw(
+                    ctx,
+                    currentImage,
+                    character.x,
+                    character.y + offsetY,
+                    character.width,
+                    character.height,
+                    character.direction,
+                    charConfig.frameCounts[currentState as CharacterState] || 1,
+                    dt
+                );
+
+                // Draw ID above head
+                ctx.fillStyle = id === myId ? '#00FF00' : 'white';
+                ctx.font = '12px Arial';
+                ctx.fillText(id.substr(0, 4), character.x + 10, character.y - 10);
+            }
+        });
 
         // Draw Enemies
         engine.enemies.forEach(enemy => {
@@ -188,8 +265,8 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
             const imgKey = `${enemyType}_${enemyState}`;
             const img = images.current[imgKey];
 
-            if (img) {
-                enemy.renderer.draw(
+            if (img && renderer.current) {
+                renderer.current.draw(
                     ctx,
                     img,
                     enemy.x,
@@ -229,27 +306,6 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
                 ctx.fillStyle = 'white';
                 ctx.font = '12px Arial';
                 ctx.fillText(enemy.state, enemy.x - 20, enemy.y - enemy.height - 20);
-
-                // 3. Draw Attack Hitbox (Yellow)
-                let attackRange = 0;
-                if (enemy.state === 'ATTACK') {
-                    if (enemy.type === 'SPAMMER' && enemy.attackTimer > 167 && enemy.attackTimer < 500) {
-                        attackRange = 40;
-                    } else if (enemy.type === 'TROLL' && enemy.attackTimer > 333 && enemy.attackTimer < 667) {
-                        attackRange = 60;
-                    }
-                }
-                if (attackRange > 0) {
-                    const attackHitbox = {
-                        x: enemy.direction === -1 ? enemy.x + 20 : enemy.x - 20 - attackRange,
-                        y: enemy.y - 40,
-                        width: attackRange,
-                        height: 40
-                    };
-                    ctx.strokeStyle = 'yellow';
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(attackHitbox.x, attackHitbox.y, attackHitbox.width, attackHitbox.height);
-                }
             }
         });
 
@@ -264,21 +320,8 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
             }
         });
 
-        // Debug Player Hitbox
-        if (debugMode) {
-            const cHit = engine.character.getHitbox();
-            if (cHit) {
-                ctx.strokeStyle = '#FF0000';
-                ctx.strokeRect(cHit.x, cHit.y, cHit.width, cHit.height);
-            }
-            // Also draw player hurtbox for clarity in debug
-            const pHurt = engine.character.getHurtbox();
-            ctx.strokeStyle = 'green';
-            ctx.strokeRect(pHurt.x, pHurt.y, pHurt.width, pHurt.height);
-        }
-
         ctx.restore();
-    }, [images, debugMode]);
+    }, [images, debugMode, myId]);
 
     useGameLoop({ onUpdate: update, onDraw: draw });
 
@@ -298,10 +341,10 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
                     <div className="w-full bg-gray-700 h-4 rounded-full overflow-hidden">
                         <div
                             className="bg-blue-500 h-full transition-all duration-100"
-                            style={{ width: `${Math.max(0, (gameEngine.current?.character.hp || 100) / (gameEngine.current?.character.maxHp || 100) * 100)}%` }}
+                            style={{ width: `${Math.max(0, ((gameEngine.current?.players.get(myId || '')?.hp || 100) / 100) * 100)}%` }}
                         ></div>
                     </div>
-                    <div className="text-right text-white text-sm mt-1">{gameEngine.current?.character.hp}/100</div>
+                    <div className="text-right text-white text-sm mt-1">{gameEngine.current?.players.get(myId || '')?.hp || 0}/100</div>
                 </div>
 
                 {/* Controls Hint */}
@@ -309,6 +352,14 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
                     <p>A/D: Move | SPACE: Jump</p>
                     <p>J: Jab | K: Kick</p>
                     <p>L: Strong Punch | M: Sweep</p>
+                </div>
+
+                {/* Mode Indicator */}
+                <div className={`absolute bottom-4 left-4 px-3 py-1 rounded-full text-xs font-bold ${isOnline === null ? 'bg-yellow-500 text-black' :
+                    isOnline ? 'bg-green-500 text-black' : 'bg-orange-500 text-black'
+                    }`}>
+                    {isOnline === null ? '⏳ CONNECTING...' :
+                        isOnline ? '🌐 ONLINE' : '💻 OFFLINE'}
                 </div>
 
                 {/* Game Over Modal */}
