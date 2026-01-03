@@ -43,8 +43,12 @@ export class CharacterController {
     public isGrounded: boolean = false;
     public safePosition: { x: number, y: number } = { x: 100, y: 100 };
 
-    private readonly MOVE_SPEED = 0.003; // Approx 0.05 / 16.67
-    private readonly JUMP_FORCE = -1.3; // Impulse remains same
+    private jumpCount: number = 0;
+    private readonly MAX_JUMPS: number = 2;
+    private canJump: boolean = true; // Requires key release to jump again
+
+    private readonly MOVE_SPEED = 0.0001; // Reduced from 0.003
+    private readonly JUMP_FORCE = -1.0; // Reduced from -1.3
     private readonly GRAVITY = 0.005; // Approx 0.08 / 16.67
     private readonly FRICTION = 0.90; // Base friction for 60fps
     private readonly FLOOR_Y = 500;
@@ -172,6 +176,11 @@ export class CharacterController {
             if (this.vy === 0) {
                 this.safePosition = { x: this.x, y: this.y };
             }
+
+            // Reset Jump Count
+            if (this.isGrounded && this.vy === 0) {
+                this.jumpCount = 0;
+            }
         } else {
             // Air state
             if (!ATTACK_STATES.has(this.state) && this.state !== CharacterState.JUMPING) {
@@ -197,12 +206,17 @@ export class CharacterController {
 
     private handleMovement(input: InputHandler, dt: number) {
         // Horizontal Movement
+        let speed = this.MOVE_SPEED;
+        if (input.isDown('KeyN')) {
+            speed *= 2;
+        }
+
         if (input.isDown('KeyA')) {
-            this.vx -= this.MOVE_SPEED * dt; // Acceleration scaled by time
+            this.vx -= speed * dt; // Acceleration scaled by time
             this.direction = -1;
             if (this.state !== CharacterState.JUMPING) this.setState(CharacterState.RUNNING);
         } else if (input.isDown('KeyD')) {
-            this.vx += this.MOVE_SPEED * dt; // Acceleration scaled by time
+            this.vx += speed * dt; // Acceleration scaled by time
             this.direction = 1;
             if (this.state !== CharacterState.JUMPING) this.setState(CharacterState.RUNNING);
         } else {
@@ -218,10 +232,27 @@ export class CharacterController {
         }
 
         // Jumping
-        if (input.isDown('Space') && this.isGrounded) {
-            this.vy = this.JUMP_FORCE;
-            this.setState(CharacterState.JUMPING);
-            this.isGrounded = false;
+        // Jumping
+        const isJumpKeyDown = input.isDown('Space');
+
+        if (isJumpKeyDown && this.canJump) {
+            if (this.isGrounded) {
+                this.vy = this.JUMP_FORCE;
+                this.setState(CharacterState.JUMPING);
+                this.isGrounded = false;
+                this.jumpCount = 1;
+                this.canJump = false; // Require release
+            } else if (this.jumpCount < this.MAX_JUMPS) {
+                // Double Jump
+                this.vy = this.JUMP_FORCE; // Full force or reduced? Full force for now.
+                this.setState(CharacterState.JUMPING);
+                this.jumpCount++;
+                this.canJump = false; // Require release
+            }
+        }
+
+        if (!isJumpKeyDown) {
+            this.canJump = true;
         }
 
         // Gravity
