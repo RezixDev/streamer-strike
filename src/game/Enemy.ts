@@ -30,7 +30,12 @@ export class Enemy {
         this.x = x;
         this.y = y;
         this.type = type;
-        this.renderer = new SpriteRenderer();
+        if (typeof window !== 'undefined') {
+            this.renderer = new SpriteRenderer();
+        } else {
+            // @ts-ignore
+            this.renderer = null;
+        }
 
         if (type === 'SPAMMER') {
             this.hp = 50;

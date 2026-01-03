@@ -22,33 +22,47 @@ export class TileMap {
         this.tileSize = tileSize;
     }
 
-    async load(jsonPath: string, imagePath: string): Promise<void> {
-        // 1. Load JSON
+    async load(jsonPathOrData: string | any, imagePath?: string): Promise<void> {
+        // 1. Load JSON or Use Data
         try {
-            const response = await fetch(jsonPath);
-            const data = await response.json();
-            if (Array.isArray(data)) {
-                this.layers = data;
+            if (typeof jsonPathOrData === 'string') {
+                const response = await fetch(jsonPathOrData);
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    this.layers = data;
+                } else {
+                    this.layers = data.layers;
+                }
             } else {
-                this.layers = data.layers;
+                // Direct data passed
+                const data = jsonPathOrData;
+                if (Array.isArray(data)) {
+                    this.layers = data;
+                } else {
+                    this.layers = data.layers;
+                }
             }
         } catch (e) {
             console.error("Failed to load map JSON:", e);
         }
 
-        // 2. Load Spritesheet
-        return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.src = imagePath;
-            img.onload = () => {
-                this.tileset = img;
-                resolve();
-            };
-            img.onerror = (e) => {
-                console.error("Failed to load tileset image:", e);
-                reject(e);
-            };
-        });
+        // 2. Load Spritesheet (Only if in browser and imagePath provided)
+        if (typeof window !== 'undefined' && imagePath) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.src = imagePath;
+                img.onload = () => {
+                    this.tileset = img;
+                    resolve();
+                };
+                img.onerror = (e) => {
+                    console.error("Failed to load tileset image:", e);
+                    reject(e);
+                };
+            });
+        } else {
+            return Promise.resolve();
+        }
     }
 
     draw(ctx: CanvasRenderingContext2D, cameraX: number, canvasWidth: number, canvasHeight: number) {

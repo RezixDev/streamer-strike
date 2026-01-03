@@ -18,18 +18,23 @@ export class GameEngine {
     public onDamage?: (damage: number) => void;
     public onScore?: (score: number) => void;
 
-    private readonly BASE = import.meta.env.BASE_URL;
+    private readonly BASE = (import.meta as any).env?.BASE_URL || '/';
 
-    constructor(characterId: string = 'FRESH') {
+    constructor(characterId: string = 'FRESH', mapData?: any) {
         // Initialize Character
         this.character = new CharacterController({ x: 100, y: 100 });
 
         // Initialize TileMap
         this.tileMap = new TileMap(64);
 
-        // Note: Loading assets is still somewhat client-side for now, but the data is what matters.
-        // We will separate data loading from logic later if needed.
-        this.tileMap.load(`${this.BASE}sprites/maps/level1/map_data_level1.json`, `${this.BASE}sprites/maps/map_spritesheet.png`);
+        if (mapData) {
+            // Server-side or Pre-loaded usage
+            this.tileMap.load(mapData);
+        } else if (typeof window !== 'undefined') {
+            // Client-side auto-load
+            this.tileMap.load(`${this.BASE}sprites/maps/level1/map_data_level1.json`, `${this.BASE}sprites/maps/map_spritesheet.png`);
+        }
+
 
         // Spawn Enemies
         this.enemies = []; // Start empty
