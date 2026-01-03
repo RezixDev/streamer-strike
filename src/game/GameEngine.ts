@@ -5,6 +5,7 @@ import { TileMap } from './TileMap';
 import { Physics } from './Physics';
 import type { InputState } from './InputState';
 import { CHARACTERS } from './Characters';
+import type { GameState, CharacterNetworkState, EnemyState, CollectibleState } from './NetworkTypes';
 
 export class GameEngine {
     public character: CharacterController;
@@ -148,5 +149,96 @@ export class GameEngine {
             }
             return true;
         });
+    }
+
+    public getSnapshot(): GameState {
+        return {
+            character: {
+                x: this.character.x,
+                y: this.character.y,
+                vx: this.character.vx,
+                vy: this.character.vy,
+                hp: this.character.hp,
+                maxHp: this.character.maxHp,
+                state: this.character.state,
+                direction: this.character.direction,
+                isGrounded: this.character.isGrounded,
+                isHit: this.character.isHit
+            },
+            enemies: this.enemies.map(e => ({
+                id: e.id,
+                type: e.type,
+                x: e.x,
+                y: e.y,
+                hp: e.hp,
+                maxHp: e.maxHp,
+                state: e.state,
+                direction: e.direction,
+                isHit: e.isHit
+            })),
+            collectibles: this.collectibles.map(c => ({
+                type: c.type,
+                x: c.x,
+                y: c.y,
+                width: c.width,
+                height: c.height,
+                collected: c.collected
+            })),
+            gameOver: this.gameOver,
+            gameWon: this.gameWon
+        };
+    }
+
+    public applySnapshot(state: GameState) {
+        // Character
+        this.character.x = state.character.x;
+        this.character.y = state.character.y;
+        this.character.vx = state.character.vx;
+        this.character.vy = state.character.vy;
+        this.character.hp = state.character.hp;
+        this.character.state = state.character.state as any; // Cast back to enum/union
+        this.character.direction = state.character.direction as 1 | -1;
+        this.character.isGrounded = state.character.isGrounded;
+        this.character.isHit = state.character.isHit;
+
+        // Enemies
+        // Simple sync: Rebuild array or update existing?
+        // For Phase 3, full rebuild might be easier but less efficient.
+        // Let's try to update existing by ID if possible to preserve renderer state?
+        // Actually renderer is mostly stateless except for animation timer which is reset on state change.
+        // But if we create NEW Enemy instances, we lose the renderer state unless we copy it.
+        // BUT: Clientside GameEngine doesn't really run update() logic for enemies, just renders.
+
+        // Better approach for visualization:
+        // Sync enemies list.
+        const newEnemies: Enemy[] = [];
+        state.enemies.forEach(eState => {
+            let enemy = this.enemies.find(e => e.id === eState.id);
+            if (!enemy) {
+                // New Enemy
+                enemy = new Enemy(eState.x, eState.y, eState.type as any);
+                enemy.id = eState.id;
+            }
+            // Update
+            enemy.x = eState.x;
+            enemy.y = eState.y;
+            enemy.hp = eState.hp;
+            enemy.state = eState.state as any;
+            enemy.direction = eState.direction as 1 | -1;
+            enemy.isHit = eState.isHit;
+            newEnemies.push(enemy);
+        });
+        this.enemies = newEnemies;
+
+        // Collectibles
+        // Naive rebuild for now
+        this.collectibles = state.collectibles.map(c => {
+            const col = new Collectible(c.x, c.y, c.type as any);
+            col.collected = c.collected;
+            return col;
+        });
+
+        this.gameOver = state.gameOver;
+        this.gameWon = state.gameWon;
     }
 }

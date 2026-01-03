@@ -5,6 +5,7 @@ import { SpriteRenderer } from '../game/SpriteRenderer';
 import { GameEngine } from '../game/GameEngine';
 import { CharacterState } from '../game/CharacterController';
 import { CHARACTERS } from '../game/Characters';
+import { io, Socket } from 'socket.io-client';
 
 // Helper to prepend base path
 const BASE = import.meta.env.BASE_URL;
@@ -51,16 +52,10 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
     const renderer = useRef<SpriteRenderer | null>(null);
     const images = useRef<Record<string, HTMLImageElement>>({});
 
-    // Initialize Game Objects
+    const socketRef = useRef<Socket | null>(null);
+
+    // Load assets
     useEffect(() => {
-        inputHandler.current = new InputHandler();
-        gameEngine.current = new GameEngine(characterId);
-
-        // Setup Callbacks
-        gameEngine.current.onDamage = () => setTick(t => t + 1);
-
-        renderer.current = new SpriteRenderer();
-
         // Load Player Images
         const charConfig = CHARACTERS[characterId];
         Object.entries(charConfig.assets).forEach(([state, src]) => {
@@ -85,24 +80,53 @@ export const CanvasGame = ({ characterId = 'FRESH' }: { characterId?: string }) 
             img.src = src;
             images.current[type] = img;
         });
+    }, [characterId]);
+
+    // Initialize Game Engine & Socket
+    useEffect(() => {
+        inputHandler.current = new InputHandler();
+        gameEngine.current = new GameEngine(characterId);
+
+        // Initialize Renderer
+        renderer.current = new SpriteRenderer();
+
+        // Connect to Server
+        socketRef.current = io('http://localhost:3005');
+
+        socketRef.current.on('connect', () => {
+            console.log("Connected to Game Server");
+        });
+
+        socketRef.current.on('gameState', (state: any) => {
+            if (gameEngine.current) {
+                gameEngine.current.applySnapshot(state);
+            }
+        });
 
         return () => {
             inputHandler.current?.destroy();
+            socketRef.current?.disconnect();
         };
-    }, []);
+    }, [characterId]);
 
     const update = useCallback((dt: number) => {
         if (!inputHandler.current || !gameEngine.current) return;
 
-        const engine = gameEngine.current;
-        if (gameOver || gameWon) return; // Stop update on game over (local state check)
-
-        // Check engine state for game over/won
-        if (engine.gameOver && !gameOver) setGameOver(true);
-        if (engine.gameWon && !gameWon) setGameWon(true);
-
+        // 1. Get Input
         const inputState = inputHandler.current.getState();
-        engine.update(dt, inputState);
+
+        // 2. Send Input to Server
+        if (socketRef.current) {
+            socketRef.current.emit('input', inputState);
+        }
+
+        // 3. Local Update (DISABLED for Phase 3 Authoritative Server)
+        // gameEngine.current.update(dt, inputState);
+
+        // 4. Update React State for UI (HP, Game Over)
+        // We still need to check these flags from the engine (which is updated by snapshot)
+        if (gameEngine.current.gameOver && !gameOver) setGameOver(true);
+        if (gameEngine.current.gameWon && !gameWon) setGameWon(true);
 
     }, [gameOver, gameWon]);
 

@@ -9,10 +9,11 @@ export class Enemy {
     public x: number;
     public y: number;
     public width: number = 64;
-    public height: number = 64;
+    public height: number = 64; // 2x scale
     public hp: number = 100;
     public maxHp: number = 100;
     public type: EnemyType;
+    public id: string;
     public state: EnemyState = 'IDLE';
     public vy: number = 0;
     private readonly GRAVITY = 0.005; // 0.08 / 16.67
@@ -27,6 +28,7 @@ export class Enemy {
     public renderer: SpriteRenderer;
 
     constructor(x: number, y: number, type: EnemyType) {
+        this.id = Math.random().toString(36).substr(2, 9);
         this.x = x;
         this.y = y;
         this.type = type;
