@@ -1,4 +1,4 @@
-import { InputHandler } from './InputHandler';
+import type { InputState } from './InputState';
 import { TileMap } from './TileMap';
 import { Physics, type Rectangle } from './Physics';
 
@@ -74,7 +74,7 @@ export class CharacterController {
         // Optional: Knockback?
     }
 
-    public update(input: InputHandler, dt: number, map?: TileMap | null) {
+    public update(input: InputState, dt: number, map?: TileMap | null) {
         if (this.hitTimer > 0) this.hitTimer -= dt;
 
         // If attacking, lock movement and wait for animation to finish
@@ -190,32 +190,32 @@ export class CharacterController {
 
         // Attack triggers
         if (!ATTACK_STATES.has(this.state)) {
-            if (input.isDown('KeyJ')) {
+            if (input.jab) {
                 // Random Jab or Weak Punch
                 this.setState(Math.random() > 0.5 ? CharacterState.JAB : CharacterState.WEAK_PUNCH);
-            } else if (input.isDown('KeyK')) {
+            } else if (input.kick) {
                 // Random Kick or Tornado
                 this.setState(Math.random() > 0.5 ? CharacterState.ATTACKING : CharacterState.TORNADO_KICK);
-            } else if (input.isDown('KeyL')) {
+            } else if (input.heavyPunch) {
                 this.setState(CharacterState.STRONG_PUNCH);
-            } else if (input.isDown('KeyM')) {
+            } else if (input.sweep) {
                 this.setState(CharacterState.SWEEP_KICK);
             }
         }
     }
 
-    private handleMovement(input: InputHandler, dt: number) {
+    private handleMovement(input: InputState, dt: number) {
         // Horizontal Movement
         let speed = this.MOVE_SPEED;
-        if (input.isDown('KeyN')) {
+        if (input.run) {
             speed *= 2;
         }
 
-        if (input.isDown('KeyA')) {
+        if (input.left) {
             this.vx -= speed * dt; // Acceleration scaled by time
             this.direction = -1;
             if (this.state !== CharacterState.JUMPING) this.setState(CharacterState.RUNNING);
-        } else if (input.isDown('KeyD')) {
+        } else if (input.right) {
             this.vx += speed * dt; // Acceleration scaled by time
             this.direction = 1;
             if (this.state !== CharacterState.JUMPING) this.setState(CharacterState.RUNNING);
@@ -233,7 +233,7 @@ export class CharacterController {
 
         // Jumping
         // Jumping
-        const isJumpKeyDown = input.isDown('Space');
+        const isJumpKeyDown = input.jump;
 
         if (isJumpKeyDown && this.canJump) {
             if (this.isGrounded) {
